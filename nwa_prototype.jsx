@@ -37,18 +37,18 @@ const CLOSURES = [
 ];
 
 const COMPLAINTS_INIT = [
-  { id:"NWA-20260215-0001", category:"Pothole", desc:"Large pothole on Washington Boulevard near Three Miles. Approximately 2 feet wide.", parish:"Kingston", status:"under_review", date:"2026-02-15", lat:18.0150, lng:-76.8100, assignedTo:"Road Maintenance" },
-  { id:"NWA-20260216-0002", category:"Flooding", desc:"Persistent flooding at the intersection of Spanish Town Road and Marcus Garvey Drive after moderate rainfall.", parish:"Kingston", status:"pending", date:"2026-02-16", lat:18.0050, lng:-76.8000 },
-  { id:"NWA-20260217-0003", category:"Road Damage", desc:"Road surface severely damaged along a 200m stretch of the Junction Road near Castleton.", parish:"St. Mary", status:"resolved", date:"2026-02-17", lat:18.2500, lng:-76.8800, assignedTo:"Parish Operations", resolvedBy:"J. Williams", closedBy:"M. Thompson" },
-  { id:"NWA-20260218-0004", category:"Signage", desc:"Missing directional sign at the roundabout entering Mandeville from the bypass.", parish:"Manchester", status:"pending", date:"2026-02-18", lat:18.0400, lng:-77.5000 },
-  { id:"NWA-20260210-0005", category:"Pothole", desc:"Series of potholes on Constant Spring Road near Manor Park causing traffic slowdowns.", parish:"St. Andrew", status:"resolved", date:"2026-02-10", lat:18.0350, lng:-76.7850, assignedTo:"Road Maintenance", resolvedBy:"D. Brown", closedBy:"S. Clarke" },
-  { id:"NWA-20260211-0006", category:"Drainage", desc:"Blocked drain causing water accumulation on Red Hills Road near Stony Hill.", parish:"St. Andrew", status:"under_review", date:"2026-02-11", lat:18.0450, lng:-76.8050, assignedTo:"Bridge & Drainage" },
-  { id:"NWA-20260212-0007", category:"Road Damage", desc:"Road shoulder collapse on the North Coast Highway near Discovery Bay.", parish:"St. Ann", status:"sent_review", date:"2026-02-12", lat:18.4500, lng:-77.4000, assignedTo:"Parish Operations" },
-  { id:"NWA-20260213-0008", category:"Flooding", desc:"Chronic flooding at Bog Walk Gorge entrance during moderate rainfall.", parish:"St. Catherine", status:"under_review", date:"2026-02-13", lat:18.0900, lng:-76.9900, assignedTo:"Bridge & Drainage" },
-  { id:"NWA-20260214-0009", category:"Pothole", desc:"Deep pothole on Molynes Road near Queensborough. Two vehicles damaged.", parish:"Kingston", status:"pending", date:"2026-02-14", lat:18.0200, lng:-76.8000 },
-  { id:"NWA-20260219-0010", category:"Road Damage", desc:"Landslide debris partially blocking Junction Road near Hardware Gap.", parish:"St. Andrew", status:"pending", date:"2026-02-19", lat:18.1200, lng:-76.7100 },
-  { id:"NWA-20260219-0011", category:"Signage", desc:"Faded road markings on the Mandela Highway near Portmore toll plaza.", parish:"St. Catherine", status:"sent_review", date:"2026-02-19", lat:18.0050, lng:-76.8700, assignedTo:"Traffic Management" },
-  { id:"NWA-20260220-0012", category:"Flooding", desc:"Severe flooding on Marcus Garvey Drive after overnight rain. Two lanes impassable.", parish:"Kingston", status:"pending", date:"2026-02-20", lat:18.0000, lng:-76.7900 },
+  { id:"NWA-20260215-0001", category:"Pothole", desc:"Large pothole on Washington Boulevard near Three Miles. Approximately 2 feet wide.", parish:"Kingston", status:"under_review", date:"2026-02-15", lat:18.0150, lng:-76.8100, assignedTo:"Road Maintenance", priority:"high" },
+  { id:"NWA-20260216-0002", category:"Flooding", desc:"Persistent flooding at the intersection of Spanish Town Road and Marcus Garvey Drive after moderate rainfall.", parish:"Kingston", status:"pending", date:"2026-02-16", lat:18.0050, lng:-76.8000, priority:"standard" },
+  { id:"NWA-20260217-0003", category:"Road Damage", desc:"Road surface severely damaged along a 200m stretch of the Junction Road near Castleton.", parish:"St. Mary", status:"resolved", date:"2026-02-17", lat:18.2500, lng:-76.8800, assignedTo:"Parish Operations", resolvedBy:"J. Williams", closedBy:"M. Thompson", priority:"high" },
+  { id:"NWA-20260218-0004", category:"Signage", desc:"Missing directional sign at the roundabout entering Mandeville from the bypass.", parish:"Manchester", status:"pending", date:"2026-02-18", lat:18.0400, lng:-77.5000, priority:"low" },
+  { id:"NWA-20260210-0005", category:"Pothole", desc:"Series of potholes on Constant Spring Road near Manor Park causing traffic slowdowns.", parish:"St. Andrew", status:"resolved", date:"2026-02-10", lat:18.0350, lng:-76.7850, assignedTo:"Road Maintenance", resolvedBy:"D. Brown", closedBy:"S. Clarke", priority:"standard" },
+  { id:"NWA-20260211-0006", category:"Drainage", desc:"Blocked drain causing water accumulation on Red Hills Road near Stony Hill.", parish:"St. Andrew", status:"under_review", date:"2026-02-11", lat:18.0450, lng:-76.8050, assignedTo:"Bridge & Drainage", priority:"standard" },
+  { id:"NWA-20260212-0007", category:"Road Damage", desc:"Road shoulder collapse on the North Coast Highway near Discovery Bay.", parish:"St. Ann", status:"sent_review", date:"2026-02-12", lat:18.4500, lng:-77.4000, assignedTo:"Parish Operations", priority:"high" },
+  { id:"NWA-20260213-0008", category:"Flooding", desc:"Chronic flooding at Bog Walk Gorge entrance during moderate rainfall.", parish:"St. Catherine", status:"under_review", date:"2026-02-13", lat:18.0900, lng:-76.9900, assignedTo:"Bridge & Drainage", priority:"standard" },
+  { id:"NWA-20260214-0009", category:"Pothole", desc:"Deep pothole on Molynes Road near Queensborough. Two vehicles damaged.", parish:"Kingston", status:"pending", date:"2026-02-14", lat:18.0200, lng:-76.8000, priority:"high" },
+  { id:"NWA-20260219-0010", category:"Road Damage", desc:"Landslide debris partially blocking Junction Road near Hardware Gap.", parish:"St. Andrew", status:"pending", date:"2026-02-19", lat:18.1200, lng:-76.7100, priority:"standard" },
+  { id:"NWA-20260219-0011", category:"Signage", desc:"Faded road markings on the Mandela Highway near Portmore toll plaza.", parish:"St. Catherine", status:"sent_review", date:"2026-02-19", lat:18.0050, lng:-76.8700, assignedTo:"Traffic Management", priority:"low" },
+  { id:"NWA-20260220-0012", category:"Flooding", desc:"Severe flooding on Marcus Garvey Drive after overnight rain. Two lanes impassable.", parish:"Kingston", status:"pending", date:"2026-02-20", lat:18.0000, lng:-76.7900, priority:"high" },
 ];
 
 const EMERGENCY_EVENTS = [
@@ -69,6 +69,43 @@ const CASE_STATUS_COLORS = { pending:"#FF9800", under_review:"#1565C0", sent_rev
 const CASE_STATUS_LABELS = { pending:"Pending Approval", under_review:"Under Review", sent_review:"Sent for Review", resolved:"Resolved" };
 
 const DEPARTMENTS = ["Road Maintenance","Bridge & Drainage","Parish Operations","Traffic Management","Major Projects","Planning & Research"];
+
+// SLA configuration (days to resolve by priority)
+const SLA_DAYS = { high:1, standard:3, low:5 };
+const SLA_COLORS = { on_track:"#4CAF50", at_risk:"#FF9800", breached:"#C62828", met:"#4CAF50", missed:"#C62828" };
+const SLA_LABELS = { on_track:"On Track", at_risk:"At Risk", breached:"Breached", met:"SLA Met", missed:"SLA Missed" };
+
+function getSlaStatus(complaint) {
+  const priority = complaint.priority || "standard";
+  const slaDays = SLA_DAYS[priority];
+  const submitted = new Date(complaint.date);
+  const deadline = new Date(submitted);
+  deadline.setDate(deadline.getDate() + slaDays);
+  const now = new Date();
+
+  if (complaint.status === "resolved") {
+    // For resolved: compare resolve date (simulated as same day for demo) vs deadline
+    return now <= deadline ? "met" : "missed";
+  }
+
+  const elapsed = (now - submitted) / (1000 * 60 * 60 * 24);
+  const threshold = slaDays * 0.75;
+
+  if (elapsed > slaDays) return "breached";
+  if (elapsed >= threshold) return "at_risk";
+  return "on_track";
+}
+
+function getSlaDaysRemaining(complaint) {
+  const priority = complaint.priority || "standard";
+  const slaDays = SLA_DAYS[priority];
+  const submitted = new Date(complaint.date);
+  const deadline = new Date(submitted);
+  deadline.setDate(deadline.getDate() + slaDays);
+  const now = new Date();
+  const diff = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24));
+  return diff;
+}
 
 const clickable = (onClick) => ({
   onClick,
@@ -270,13 +307,28 @@ export default function NWAPrototype() {
 function HomePage({ navigate }) {
   return (
     <div>
-      <div style={{ background:"linear-gradient(135deg, #1F4E79 0%, #2E75B6 50%, #1F4E79 100%)", color:"#fff", padding:"80px 40px", textAlign:"center", borderRadius:"0 0 16px 16px", position:"relative", overflow:"hidden" }}>
-        <div style={{ position:"absolute", inset:0, background:"url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"20\" cy=\"20\" r=\"1\" fill=\"rgba(255,255,255,0.05)\"/><circle cx=\"60\" cy=\"40\" r=\"1.5\" fill=\"rgba(255,255,255,0.04)\"/><circle cx=\"80\" cy=\"70\" r=\"1\" fill=\"rgba(255,255,255,0.06)\"/></svg>')" }} />
-        <div style={{ position:"relative", zIndex:1 }}>
-          <div style={{ fontSize:11, textTransform:"uppercase", letterSpacing:3, opacity:0.7, marginBottom:12 }}>National Works Agency &bull; Government of Jamaica</div>
-          <h1 style={{ fontSize:36, fontWeight:800, margin:"0 0 16px", lineHeight:1.2 }}>Building Jamaica's Roads<br/>for the Future</h1>
-          <p style={{ fontSize:16, opacity:0.85, maxWidth:600, margin:"0 auto 28px" }}>Managing over 5,000 km of main roads — delivering infrastructure, transparency, and public service across all 14 parishes.</p>
-          <button onClick={() => navigate("projects")} style={{ background:"#D4A843", color:"#1F4E79", border:"none", padding:"14px 32px", borderRadius:8, fontWeight:700, fontSize:15, cursor:"pointer", boxShadow:"0 4px 12px rgba(0,0,0,0.2)" }}>View Projects Map →</button>
+      {/* Video Hero */}
+      <div style={{ position:"relative", overflow:"hidden", borderRadius:"0 0 16px 16px", minHeight:420 }}>
+        {/* YouTube Embed — muted autoplay background */}
+        <div style={{ position:"absolute", inset:0, zIndex:0, pointerEvents:"none", overflow:"hidden" }}>
+          <iframe
+            src="https://www.youtube.com/embed/HNftNo8Ewuc?autoplay=1&mute=1&loop=1&playlist=HNftNo8Ewuc&controls=0&showinfo=0&modestbranding=1&rel=0&iv_load_policy=3&disablekb=1&playsinline=1"
+            title="NWA Road Construction"
+            allow="autoplay; encrypted-media"
+            style={{ position:"absolute", top:"50%", left:"50%", transform:"translate(-50%, -50%)", width:"180%", height:"180%", border:"none" }}
+          />
+        </div>
+        {/* Dark overlay */}
+        <div style={{ position:"absolute", inset:0, background:"linear-gradient(135deg, rgba(31,78,121,0.85) 0%, rgba(46,117,182,0.75) 50%, rgba(31,78,121,0.9) 100%)", zIndex:1 }} />
+        {/* Content */}
+        <div style={{ position:"relative", zIndex:2, padding:"90px 40px 80px", textAlign:"center", color:"#fff" }}>
+          <div style={{ fontSize:11, textTransform:"uppercase", letterSpacing:3, opacity:0.8, marginBottom:12 }}>National Works Agency &bull; Government of Jamaica</div>
+          <h1 style={{ fontSize:40, fontWeight:800, margin:"0 0 16px", lineHeight:1.2, textShadow:"0 2px 12px rgba(0,0,0,0.3)" }}>Building Jamaica's Roads<br/>for the Future</h1>
+          <p style={{ fontSize:16, opacity:0.9, maxWidth:600, margin:"0 auto 32px", textShadow:"0 1px 4px rgba(0,0,0,0.2)" }}>Managing over 5,000 km of main roads — delivering infrastructure, transparency, and public service across all 14 parishes.</p>
+          <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
+            <button onClick={() => navigate("projects")} style={{ background:"#D4A843", color:"#1F4E79", border:"none", padding:"14px 32px", borderRadius:8, fontWeight:700, fontSize:15, cursor:"pointer", boxShadow:"0 4px 12px rgba(0,0,0,0.3)" }}>View Projects Map →</button>
+            <button onClick={() => navigate("report")} style={{ background:"rgba(255,255,255,0.15)", color:"#fff", border:"2px solid rgba(255,255,255,0.4)", padding:"14px 32px", borderRadius:8, fontWeight:700, fontSize:15, cursor:"pointer", backdropFilter:"blur(4px)" }}>Report an Issue</button>
+          </div>
         </div>
       </div>
 
@@ -754,6 +806,59 @@ function DashboardPage({ complaints, setComplaints, navigate }) {
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [confirmClose, setConfirmClose] = useState(null);
   const [viewTicket, setViewTicket] = useState(null);
+  const [editMode, setEditMode] = useState(false);
+  const [editData, setEditData] = useState({});
+  const [caseNote, setCaseNote] = useState("");
+  const [caseNotes, setCaseNotes] = useState({});
+
+  const openTicket = (id) => { setViewTicket(id); setEditMode(false); setCaseNote(""); };
+  const startEdit = (t) => { setEditData({ status:t.status, category:t.category, assignedTo:t.assignedTo || "", priority:t.priority || "standard" }); setEditMode(true); };
+  const handleUpdate = (id) => {
+    setComplaints(prev => prev.map(c => c.id === id ? { ...c, ...editData } : c));
+    if (caseNote.trim()) {
+      setCaseNotes(prev => ({ ...prev, [id]: [...(prev[id] || []), { text:caseNote.trim(), author:"nwa_supervisor", time:new Date().toLocaleString() }] }));
+      setCaseNote("");
+    }
+    setEditMode(false);
+  };
+  const addNote = (id) => {
+    if (!caseNote.trim()) return;
+    setCaseNotes(prev => ({ ...prev, [id]: [...(prev[id] || []), { text:caseNote.trim(), author:"nwa_supervisor", time:new Date().toLocaleString() }] }));
+    setCaseNote("");
+  };
+
+  // Sorting
+  const [sortCol, setSortCol] = useState("date");
+  const [sortAsc, setSortAsc] = useState(false);
+
+  const handleSort = (col) => {
+    if (sortCol === col) { setSortAsc(!sortAsc); }
+    else { setSortCol(col); setSortAsc(true); }
+  };
+
+  const SLA_ORDER = { breached:0, at_risk:1, on_track:2, missed:3, met:4 };
+  const STATUS_ORDER = { pending:0, under_review:1, sent_review:2, resolved:3 };
+  const PRIORITY_ORDER = { high:0, standard:1, low:2 };
+
+  const sortedComplaints = useMemo(() => {
+    const arr = [...complaints];
+    arr.sort((a, b) => {
+      let va, vb;
+      switch (sortCol) {
+        case "id": va = a.id; vb = b.id; break;
+        case "date": va = a.date; vb = b.date; break;
+        case "category": va = a.category; vb = b.category; break;
+        case "parish": va = a.parish; vb = b.parish; break;
+        case "status": va = STATUS_ORDER[a.status] ?? 9; vb = STATUS_ORDER[b.status] ?? 9; break;
+        case "priority": va = PRIORITY_ORDER[a.priority || "standard"]; vb = PRIORITY_ORDER[b.priority || "standard"]; break;
+        case "sla": va = SLA_ORDER[getSlaStatus(a)] ?? 9; vb = SLA_ORDER[getSlaStatus(b)] ?? 9; break;
+        default: va = a.id; vb = b.id;
+      }
+      if (typeof va === "string") return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+      return sortAsc ? va - vb : vb - va;
+    });
+    return arr;
+  }, [complaints, sortCol, sortAsc]);
 
   const total = complaints.length;
   const open = complaints.filter(c => c.status !== "resolved").length;
@@ -794,9 +899,9 @@ function DashboardPage({ complaints, setComplaints, navigate }) {
         {[
           { label:"Total Submissions", value:total, color:"#1F4E79", icon:"📋" },
           { label:"Open Cases", value:open, color:"#E65100", icon:"📂" },
-          { label:"Pending Approval", value:pending, color:"#FF9800", icon:"⏳" },
+          { label:"SLA Breached", value:complaints.filter(c => getSlaStatus(c) === "breached").length, color:"#C62828", icon:"🚨" },
+          { label:"At Risk", value:complaints.filter(c => getSlaStatus(c) === "at_risk").length, color:"#FF9800", icon:"⚠️" },
           { label:"Resolved", value:resolved, color:"#4CAF50", icon:"✅" },
-          { label:"Avg Response", value:"2.3 days", color:"#7B1FA2", icon:"⏱️" },
         ].map(k => (
           <div key={k.label} style={{ background:"#fff", borderRadius:12, padding:20, boxShadow:"0 2px 8px rgba(0,0,0,0.06)", borderTop:`4px solid ${k.color}` }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
@@ -829,23 +934,41 @@ function DashboardPage({ complaints, setComplaints, navigate }) {
       <div className="nwa-grid-2col" style={{ display:"grid", gridTemplateColumns:"1fr 300px", gap:20 }}>
         {/* Ticket Table */}
         <div style={{ background:"#fff", borderRadius:12, boxShadow:"0 2px 8px rgba(0,0,0,0.06)", overflow:"hidden" }}>
-          <div style={{ padding:"16px 20px", borderBottom:"1px solid #eee", fontWeight:700, color:"#1F4E79", fontSize:14 }}>All Cases ({total})</div>
+          <div style={{ padding:"16px 20px", borderBottom:"1px solid #eee", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+            <span style={{ fontWeight:700, color:"#1F4E79", fontSize:14 }}>All Cases ({total})</span>
+            <span style={{ fontSize:11, color:"#888" }}>SLA: High 1d · Standard 3d · Low 5d</span>
+          </div>
           <div style={{ overflowX:"auto" }}>
             <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
               <thead><tr style={{ background:"#f8f9fa" }}>
-                {["ID","Date","Category","Parish","Status","Assigned","Action"].map(h => (
-                  <th key={h} style={{ padding:"10px 12px", textAlign:"left", fontWeight:600, color:"#888", borderBottom:"1px solid #eee" }}>{h}</th>
+                {[
+                  { key:"id", label:"ID" }, { key:"date", label:"Date" }, { key:"category", label:"Category" },
+                  { key:"parish", label:"Parish" }, { key:"priority", label:"Priority" }, { key:"status", label:"Status" },
+                  { key:"sla", label:"SLA" }, { key:null, label:"Action" },
+                ].map(h => (
+                  <th key={h.label} onClick={h.key ? () => handleSort(h.key) : undefined} style={{ padding:"10px 12px", textAlign:"left", fontWeight:600, color: sortCol === h.key ? "#1F4E79" : "#888", borderBottom:"1px solid #eee", cursor: h.key ? "pointer" : "default", userSelect:"none", whiteSpace:"nowrap" }}>
+                    {h.label}{sortCol === h.key ? (sortAsc ? " ▲" : " ▼") : ""}
+                  </th>
                 ))}
               </tr></thead>
               <tbody>
-                {complaints.map(c => (
-                  <tr key={c.id} style={{ borderBottom:"1px solid #f0f0f0", cursor:"pointer" }} onClick={() => setViewTicket(c.id)} onMouseEnter={e => e.currentTarget.style.background="#f8f9fa"} onMouseLeave={e => e.currentTarget.style.background="transparent"}>
+                {sortedComplaints.map(c => {
+                  const sla = getSlaStatus(c);
+                  const daysLeft = getSlaDaysRemaining(c);
+                  return (
+                  <tr key={c.id} style={{ borderBottom:"1px solid #f0f0f0", cursor:"pointer" }} onClick={() => openTicket(c.id)} onMouseEnter={e => e.currentTarget.style.background="#f8f9fa"} onMouseLeave={e => e.currentTarget.style.background="transparent"}>
                     <td style={{ padding:"10px 12px", fontWeight:600, color:"#1F4E79" }}>{c.id.slice(-4)}</td>
                     <td style={{ padding:"10px 12px", color:"#666" }}>{c.date}</td>
                     <td style={{ padding:"10px 12px" }}>{c.category}</td>
                     <td style={{ padding:"10px 12px" }}>{c.parish}</td>
+                    <td style={{ padding:"10px 12px" }}><span style={{ background: (c.priority || "standard") === "high" ? "#C62828" : (c.priority || "standard") === "low" ? "#78909C" : "#1565C0", color:"#fff", padding:"2px 8px", borderRadius:12, fontSize:10, fontWeight:600 }}>{(c.priority || "standard").charAt(0).toUpperCase() + (c.priority || "standard").slice(1)}</span></td>
                     <td style={{ padding:"10px 12px" }}><span style={{ background:CASE_STATUS_COLORS[c.status], color:"#fff", padding:"2px 8px", borderRadius:12, fontSize:10, fontWeight:600 }}>{CASE_STATUS_LABELS[c.status]}</span></td>
-                    <td style={{ padding:"10px 12px", color:"#666", fontSize:11 }}>{c.assignedTo || "—"}</td>
+                    <td style={{ padding:"10px 12px" }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+                        <span style={{ background:SLA_COLORS[sla], color:"#fff", padding:"2px 8px", borderRadius:12, fontSize:10, fontWeight:600 }}>{SLA_LABELS[sla]}</span>
+                        {c.status !== "resolved" && <span style={{ fontSize:10, color: daysLeft < 0 ? "#C62828" : "#888" }}>{daysLeft < 0 ? `${Math.abs(daysLeft)}d over` : `${daysLeft}d left`}</span>}
+                      </div>
+                    </td>
                     <td style={{ padding:"10px 12px" }}>
                       {c.status !== "resolved" ? (
                         <div style={{ display:"flex", gap:4 }}>
@@ -855,7 +978,8 @@ function DashboardPage({ complaints, setComplaints, navigate }) {
                       ) : <span style={{ fontSize:10, color:"#4CAF50", fontWeight:600 }}>Closed</span>}
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -882,16 +1006,18 @@ function DashboardPage({ complaints, setComplaints, navigate }) {
       {viewTicket && (() => {
         const t = complaints.find(c => c.id === viewTicket);
         if (!t) return null;
+        const notes = caseNotes[t.id] || [];
         const timeline = [
-          { label:"Submitted", detail:`Citizen report received`, date:t.date, done:true },
-          { label:"Pending Approval", detail:"Awaiting initial review by supervisor", date:t.status !== "pending" ? t.date : null, done:t.status !== "pending" },
-          { label:"Under Review", detail:t.assignedTo ? `Assigned to ${t.assignedTo}` : "Awaiting assignment", date:t.status === "under_review" || t.status === "sent_review" || t.status === "resolved" ? t.date : null, done:t.status === "under_review" || t.status === "sent_review" || t.status === "resolved" },
-          { label:"Sent for Review", detail:"Field inspection or verification in progress", date:t.status === "sent_review" || t.status === "resolved" ? t.date : null, done:t.status === "sent_review" || t.status === "resolved" },
-          { label:"Resolved", detail:t.resolvedBy ? `Resolved by ${t.resolvedBy}, closed by ${t.closedBy}` : "Pending resolution", date:t.status === "resolved" ? t.date : null, done:t.status === "resolved" },
+          { label:"Submitted", detail:"Citizen report received", done:true },
+          { label:"Pending Approval", detail:"Awaiting initial review by supervisor", done:t.status !== "pending" },
+          { label:"Under Review", detail:t.assignedTo ? `Assigned to ${t.assignedTo}` : "Awaiting assignment", done:t.status === "under_review" || t.status === "sent_review" || t.status === "resolved" },
+          { label:"Sent for Review", detail:"Field inspection or verification in progress", done:t.status === "sent_review" || t.status === "resolved" },
+          { label:"Resolved", detail:t.resolvedBy ? `Resolved by ${t.resolvedBy}, closed by ${t.closedBy}` : "Pending resolution", done:t.status === "resolved" },
         ];
+        const sty_label = { fontSize:11, fontWeight:700, color:"#888", textTransform:"uppercase", letterSpacing:0.5, marginBottom:4 };
         return (
-          <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:2000 }} onClick={() => setViewTicket(null)}>
-            <div style={{ background:"#fff", borderRadius:16, maxWidth:600, width:"92%", maxHeight:"90vh", overflow:"auto" }} onClick={e => e.stopPropagation()}>
+          <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:2000 }} onClick={() => { setViewTicket(null); setEditMode(false); }}>
+            <div style={{ background:"#fff", borderRadius:16, maxWidth:640, width:"92%", maxHeight:"90vh", overflow:"auto" }} onClick={e => e.stopPropagation()}>
               {/* Header */}
               <div style={{ background:"linear-gradient(135deg, #1F4E79 0%, #2E75B6 100%)", color:"#fff", padding:"24px 28px", borderRadius:"16px 16px 0 0", display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
                 <div>
@@ -901,14 +1027,14 @@ function DashboardPage({ complaints, setComplaints, navigate }) {
                 </div>
                 <div style={{ display:"flex", alignItems:"center", gap:8 }}>
                   <span style={{ background:CASE_STATUS_COLORS[t.status], color:"#fff", padding:"4px 12px", borderRadius:20, fontSize:11, fontWeight:700 }}>{CASE_STATUS_LABELS[t.status]}</span>
-                  <button onClick={() => setViewTicket(null)} style={{ background:"rgba(255,255,255,0.2)", border:"none", color:"#fff", width:28, height:28, borderRadius:8, cursor:"pointer", fontSize:16, display:"flex", alignItems:"center", justifyContent:"center" }}>×</button>
+                  <button onClick={() => { setViewTicket(null); setEditMode(false); }} style={{ background:"rgba(255,255,255,0.2)", border:"none", color:"#fff", width:28, height:28, borderRadius:8, cursor:"pointer", fontSize:16, display:"flex", alignItems:"center", justifyContent:"center" }}>×</button>
                 </div>
               </div>
 
               <div style={{ padding:"24px 28px" }}>
                 {/* Description */}
                 <div style={{ marginBottom:20 }}>
-                  <div style={{ fontSize:12, fontWeight:700, color:"#888", textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Description</div>
+                  <div style={sty_label}>Description</div>
                   <div style={{ fontSize:14, lineHeight:1.7, color:"#333", background:"#f8f9fa", padding:16, borderRadius:8, borderLeft:"4px solid #2E75B6" }}>{t.desc}</div>
                 </div>
 
@@ -920,7 +1046,7 @@ function DashboardPage({ complaints, setComplaints, navigate }) {
                     { label:"Parish", value:t.parish },
                     { label:"Assigned To", value:t.assignedTo || "Unassigned" },
                     { label:"Location", value:t.lat ? `${t.lat.toFixed(4)}, ${t.lng.toFixed(4)}` : "Not specified" },
-                    { label:"Priority", value:t.status === "pending" && !t.assignedTo ? "Awaiting Triage" : "Standard" },
+                    { label:"Priority", value:t.priority === "high" ? "High" : t.priority === "low" ? "Low" : "Standard" },
                   ].map(d => (
                     <div key={d.label} style={{ background:"#f8f9fa", padding:"12px 16px", borderRadius:8 }}>
                       <div style={{ fontSize:10, fontWeight:600, color:"#888", textTransform:"uppercase", letterSpacing:0.5, marginBottom:2 }}>{d.label}</div>
@@ -929,15 +1055,95 @@ function DashboardPage({ complaints, setComplaints, navigate }) {
                   ))}
                 </div>
 
+                {/* Update Case Panel */}
+                {t.status !== "resolved" && (
+                  <div style={{ marginBottom:20 }}>
+                    {!editMode ? (
+                      <button onClick={() => startEdit(t)} style={{ background:"#E8F0FE", color:"#1F4E79", border:"1px solid #B3D1F0", padding:"10px 20px", borderRadius:8, fontWeight:700, cursor:"pointer", fontSize:13, width:"100%" }}>Update Case</button>
+                    ) : (
+                      <div style={{ background:"#f8f9fa", borderRadius:12, padding:20, border:"1px solid #e0e0e0" }}>
+                        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
+                          <div style={{ fontSize:14, fontWeight:700, color:"#1F4E79" }}>Update Case</div>
+                          <span style={{ fontSize:11, color:"#888" }}>Editing as nwa_supervisor</span>
+                        </div>
+                        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:12 }}>
+                          <div>
+                            <div style={sty_label}>Status</div>
+                            <select value={editData.status} onChange={e => setEditData(p => ({...p, status:e.target.value}))} style={{...inputStyle, width:"100%"}}>
+                              {Object.entries(CASE_STATUS_LABELS).filter(([k]) => k !== "resolved").map(([k,v]) => <option key={k} value={k}>{v}</option>)}
+                            </select>
+                          </div>
+                          <div>
+                            <div style={sty_label}>Category</div>
+                            <select value={editData.category} onChange={e => setEditData(p => ({...p, category:e.target.value}))} style={{...inputStyle, width:"100%"}}>
+                              {["Pothole","Road Damage","Flooding","Drainage","Signage","Other"].map(c => <option key={c}>{c}</option>)}
+                            </select>
+                          </div>
+                          <div>
+                            <div style={sty_label}>Assigned To</div>
+                            <select value={editData.assignedTo} onChange={e => setEditData(p => ({...p, assignedTo:e.target.value}))} style={{...inputStyle, width:"100%"}}>
+                              <option value="">Unassigned</option>
+                              {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
+                            </select>
+                          </div>
+                          <div>
+                            <div style={sty_label}>Priority</div>
+                            <select value={editData.priority} onChange={e => setEditData(p => ({...p, priority:e.target.value}))} style={{...inputStyle, width:"100%"}}>
+                              <option value="low">Low</option>
+                              <option value="standard">Standard</option>
+                              <option value="high">High</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div style={{ marginBottom:12 }}>
+                          <div style={sty_label}>Add Internal Note</div>
+                          <textarea value={caseNote} onChange={e => setCaseNote(e.target.value)} placeholder="Add a note about this update..." rows={2} style={{...inputStyle, width:"100%", resize:"vertical", boxSizing:"border-box"}} />
+                        </div>
+                        <div style={{ display:"flex", gap:8 }}>
+                          <button onClick={() => handleUpdate(t.id)} style={{ flex:1, background:"#1F4E79", color:"#fff", border:"none", padding:"10px", borderRadius:8, fontWeight:700, cursor:"pointer", fontSize:13 }}>Save Changes</button>
+                          <button onClick={() => setEditMode(false)} style={{ flex:1, background:"#f0f0f0", border:"none", padding:"10px", borderRadius:8, cursor:"pointer", fontSize:13 }}>Cancel</button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Internal Notes */}
+                {notes.length > 0 && (
+                  <div style={{ marginBottom:20 }}>
+                    <div style={sty_label}>Internal Notes ({notes.length})</div>
+                    <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                      {notes.map((n, i) => (
+                        <div key={i} style={{ background:"#FFFDE7", padding:"10px 14px", borderRadius:8, border:"1px solid #FFF9C4", fontSize:12 }}>
+                          <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
+                            <span style={{ fontWeight:700, color:"#1F4E79" }}>{n.author}</span>
+                            <span style={{ color:"#999", fontSize:11 }}>{n.time}</span>
+                          </div>
+                          <div style={{ color:"#444", lineHeight:1.5 }}>{n.text}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Quick Add Note (when not in edit mode, for resolved cases too) */}
+                {!editMode && (
+                  <div style={{ marginBottom:20 }}>
+                    <div style={sty_label}>Add Note</div>
+                    <div style={{ display:"flex", gap:8 }}>
+                      <input value={caseNote} onChange={e => setCaseNote(e.target.value)} onKeyDown={e => e.key === "Enter" && addNote(t.id)} placeholder="Type a note..." style={{...inputStyle, flex:1}} />
+                      <button onClick={() => addNote(t.id)} disabled={!caseNote.trim()} style={{ background: caseNote.trim() ? "#1F4E79" : "#ccc", color:"#fff", border:"none", padding:"10px 16px", borderRadius:8, fontWeight:600, cursor: caseNote.trim() ? "pointer" : "default", fontSize:12, whiteSpace:"nowrap" }}>Add</button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Status Timeline */}
                 <div style={{ marginBottom:20 }}>
-                  <div style={{ fontSize:12, fontWeight:700, color:"#888", textTransform:"uppercase", letterSpacing:1, marginBottom:12 }}>Status Timeline</div>
-                  <div style={{ position:"relative", paddingLeft:24 }}>
+                  <div style={sty_label}>Status Timeline</div>
+                  <div style={{ position:"relative", paddingLeft:24, marginTop:12 }}>
                     {timeline.map((step, i) => (
                       <div key={step.label} style={{ display:"flex", gap:12, marginBottom: i < timeline.length - 1 ? 16 : 0, position:"relative" }}>
-                        {/* Vertical line */}
                         {i < timeline.length - 1 && <div style={{ position:"absolute", left:-16, top:20, width:2, height:"calc(100% + 4px)", background: step.done ? "#4CAF50" : "#e0e0e0" }} />}
-                        {/* Dot */}
                         <div style={{ position:"absolute", left:-20, top:4, width:10, height:10, borderRadius:"50%", background: step.done ? "#4CAF50" : "#e0e0e0", border: step.done ? "2px solid #4CAF50" : "2px solid #ccc", zIndex:1 }} />
                         <div style={{ flex:1 }}>
                           <div style={{ fontSize:13, fontWeight:700, color: step.done ? "#1F4E79" : "#bbb" }}>{step.label}</div>
@@ -952,11 +1158,11 @@ function DashboardPage({ complaints, setComplaints, navigate }) {
                 <div style={{ display:"flex", gap:8, borderTop:"1px solid #eee", paddingTop:16 }}>
                   {t.status !== "resolved" && (
                     <>
-                      <button onClick={() => { setViewTicket(null); setSelectedTicket(t.id); }} style={{ flex:1, background:"#2E75B6", color:"#fff", border:"none", padding:"12px", borderRadius:8, fontWeight:700, cursor:"pointer", fontSize:13 }}>Assign Case</button>
-                      <button onClick={() => { setViewTicket(null); setConfirmClose(t.id); }} style={{ flex:1, background:"#4CAF50", color:"#fff", border:"none", padding:"12px", borderRadius:8, fontWeight:700, cursor:"pointer", fontSize:13 }}>Close Case</button>
+                      <button onClick={() => { setViewTicket(null); setEditMode(false); setSelectedTicket(t.id); }} style={{ flex:1, background:"#2E75B6", color:"#fff", border:"none", padding:"12px", borderRadius:8, fontWeight:700, cursor:"pointer", fontSize:13 }}>Assign</button>
+                      <button onClick={() => { setViewTicket(null); setEditMode(false); setConfirmClose(t.id); }} style={{ flex:1, background:"#4CAF50", color:"#fff", border:"none", padding:"12px", borderRadius:8, fontWeight:700, cursor:"pointer", fontSize:13 }}>Close Case</button>
                     </>
                   )}
-                  <button onClick={() => setViewTicket(null)} style={{ flex: t.status === "resolved" ? 1 : 0, minWidth:100, background:"#f0f0f0", border:"none", padding:"12px", borderRadius:8, cursor:"pointer", fontSize:13 }}>
+                  <button onClick={() => { setViewTicket(null); setEditMode(false); }} style={{ flex: t.status === "resolved" ? 1 : 0, minWidth:100, background:"#f0f0f0", border:"none", padding:"12px", borderRadius:8, cursor:"pointer", fontSize:13 }}>
                     {t.status === "resolved" ? "Close" : "Back"}
                   </button>
                 </div>
