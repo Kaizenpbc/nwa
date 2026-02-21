@@ -31,9 +31,9 @@ const NEWS = [
 ];
 
 const CLOSURES = [
-  { id:1, road:"Mandela Highway", parish:"St. Catherine", start:"2026-02-18", end:"2026-02-25", reason:"Bridge deck repairs", detour:"Use Portmore Toll Road as alternate route", severity:"critical", push:true },
-  { id:2, road:"Fern Gully", parish:"St. Ann", start:"2026-02-20", end:"2026-02-22", reason:"Retaining wall construction", detour:"Use Murphy Hill alternate route", severity:"warning", push:true },
-  { id:3, road:"Hope Road (near Liguanea)", parish:"St. Andrew", start:"2026-02-15", end:"2026-02-17", reason:"Water main repair", detour:"Use Old Hope Road", severity:"info", push:false },
+  { id:1, road:"Mandela Highway", parish:"St. Catherine", start:"2026-02-18", end:"2026-02-25", reason:"Bridge deck repairs", detour:"Use Portmore Toll Road as alternate route", severity:"critical", push:true, lat:18.0150, lng:-76.8650 },
+  { id:2, road:"Fern Gully", parish:"St. Ann", start:"2026-02-20", end:"2026-02-22", reason:"Retaining wall construction", detour:"Use Murphy Hill alternate route", severity:"warning", push:true, lat:18.4100, lng:-77.1200 },
+  { id:3, road:"Hope Road (near Liguanea)", parish:"St. Andrew", start:"2026-02-15", end:"2026-02-17", reason:"Water main repair", detour:"Use Old Hope Road", severity:"info", push:false, lat:18.0250, lng:-76.7700 },
 ];
 
 const COMPLAINTS_INIT = [
@@ -61,6 +61,7 @@ const EMERGENCY_EVENTS = [
 const PARISH_ALERT_LEVELS = { Kingston:"warning", "St. Andrew":"warning", "St. Thomas":"advisory", Portland:"advisory", "St. Mary":"emergency", "St. Ann":"normal", Trelawny:"normal", "St. James":"normal", Hanover:"normal", Westmoreland:"normal", "St. Elizabeth":"normal", Manchester:"normal", Clarendon:"normal", "St. Catherine":"advisory" };
 const ALERT_LEVEL_COLORS = { normal:"#4CAF50", advisory:"#FF9800", warning:"#E65100", emergency:"#C62828" };
 const ALERT_LEVEL_LABELS = { normal:"Normal", advisory:"Advisory", warning:"Warning", emergency:"Emergency" };
+const PARISH_COORDS = { Kingston:[18.0,-76.8], "St. Andrew":[18.04,-76.78], "St. Thomas":[17.97,-76.35], Portland:[18.18,-76.45], "St. Mary":[18.27,-76.89], "St. Ann":[18.41,-77.1], Trelawny:[18.35,-77.6], "St. James":[18.47,-77.92], Hanover:[18.41,-78.13], Westmoreland:[18.22,-78.15], "St. Elizabeth":[18.05,-77.85], Manchester:[18.04,-77.5], Clarendon:[17.97,-77.24], "St. Catherine":[18.04,-76.95] };
 
 const STATUS_COLORS = { complete:"#4CAF50", in_progress:"#FF9800", planned:"#9E9E9E", delayed:"#F44336" };
 const STATUS_LABELS = { complete:"Complete", in_progress:"In Progress", planned:"Planned", delayed:"Delayed" };
@@ -181,6 +182,8 @@ export default function NWAPrototype() {
           .nwa-grid-2col { grid-template-columns: 1fr !important; }
         }
         .leaflet-container { font-family: inherit; }
+        @keyframes nwa-fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .nwa-page-enter { animation: nwa-fade-in 0.3s ease-out; }
       `}</style>
 
       {/* Alert Banner */}
@@ -257,16 +260,20 @@ export default function NWAPrototype() {
 
       {/* Content */}
       <main style={{ maxWidth:1200, margin:"0 auto", padding:"0 20px" }}>
+        <div key={page} className="nwa-page-enter">
         {page === "home" && <HomePage navigate={navigate} />}
         {page === "projects" && <ProjectsPage projects={PROJECTS} selectedParish={selectedParish} setSelectedParish={setSelectedParish} navigate={navigate} />}
         {page === "project-detail" && selectedProject && <ProjectDetail project={selectedProject} navigate={navigate} />}
         {page === "report" && <ReportPage formData={formData} setFormData={setFormData} submitted={submitted} setSubmitted={setSubmitted} complaints={complaints} setComplaints={setComplaints} navigate={navigate} />}
         {page === "track" && <TrackPage trackId={trackId} setTrackId={setTrackId} trackResult={trackResult} setTrackResult={setTrackResult} complaints={complaints} />}
-        {page === "closures" && <ClosuresPage closures={closures} />}
-        {page === "news" && <NewsPage />}
+        {page === "closures" && <ClosuresPage closures={closures} navigate={navigate} />}
+        {page === "news" && <NewsPage navigate={navigate} />}
         {page === "cms" && <CMSDemo cmsStep={cmsStep} setCmsStep={setCmsStep} closures={closures} setClosures={setClosures} newClosure={newClosure} setNewClosure={setNewClosure} navigate={navigate} />}
         {page === "dashboard" && <DashboardPage complaints={complaints} setComplaints={setComplaints} navigate={navigate} />}
         {page === "emergency" && <EmergencyPage closures={closures} navigate={navigate} />}
+        {page === "about" && <AboutPage navigate={navigate} />}
+        {page === "contact" && <ContactPage />}
+        </div>
       </main>
 
       {/* Footer */}
@@ -278,8 +285,8 @@ export default function NWAPrototype() {
           </div>
           <div>
             <div style={{ fontWeight:700, fontSize:13, marginBottom:8, textTransform:"uppercase", letterSpacing:1 }}>Quick Links</div>
-            {["About Us","Projects","Tenders","Publications","FAQs"].map(l => (
-              <div key={l} style={{ fontSize:13, opacity:0.7, marginBottom:4, cursor:"pointer" }} role="link" tabIndex={0}>{l}</div>
+            {[{label:"About Us",p:"about"},{label:"Projects",p:"projects"},{label:"Road Closures",p:"closures"},{label:"News",p:"news"},{label:"Contact",p:"contact"}].map(l => (
+              <div key={l.label} {...clickable(() => navigate(l.p))} style={{ fontSize:13, opacity:0.7, marginBottom:4, cursor:"pointer" }}>{l.label}</div>
             ))}
           </div>
           <div>
@@ -296,7 +303,7 @@ export default function NWAPrototype() {
           </div>
         </div>
         <div style={{ textAlign:"center", marginTop:32, paddingTop:16, borderTop:"1px solid rgba(255,255,255,0.15)", fontSize:11, opacity:0.5 }}>
-          &copy; 2026 National Works Agency. Government of Jamaica. All rights reserved. | PROTOTYPE — FOR DEMONSTRATION PURPOSES ONLY
+          &copy; 2026 National Works Agency. Government of Jamaica. All rights reserved.
         </div>
       </footer>
     </div>
@@ -340,8 +347,8 @@ function HomePage({ navigate }) {
           { icon:"📢", label:"News", p:"news", desc:"Press releases" },
           { icon:"🔍", label:"Track Request", p:"track", desc:"Check status" },
           { icon:"🚨", label:"Emergency", p:"emergency", desc:"Disaster operations" },
-          { icon:"📊", label:"Dashboard", p:"dashboard", desc:"Staff management" },
-          { icon:"💻", label:"CMS Demo", p:"cms", desc:"Content workflow" },
+          { icon:"📊", label:"Staff Portal", p:"dashboard", desc:"Case management" },
+          { icon:"💻", label:"Content Mgmt", p:"cms", desc:"Editorial workflow" },
         ].map(q => (
           <div key={q.p} {...clickable(() => navigate(q.p))} aria-label={q.label} style={{ background:"#fff", borderRadius:12, padding:"20px 12px", textAlign:"center", cursor:"pointer", boxShadow:"0 2px 8px rgba(0,0,0,0.06)", border:"1px solid #e8e8e8", transition:"all 0.2s" }}
             onMouseEnter={e => { e.currentTarget.style.transform="translateY(-4px)"; e.currentTarget.style.boxShadow="0 8px 24px rgba(0,0,0,0.12)"; }}
@@ -711,13 +718,32 @@ function TrackPage({ trackId, setTrackId, trackResult, setTrackResult, complaint
 }
 
 // ===== ROAD CLOSURES =====
-function ClosuresPage({ closures }) {
+function ClosuresPage({ closures, navigate }) {
   const [filter, setFilter] = useState("");
   const filtered = filter ? closures.filter(c => c.parish === filter) : closures;
   return (
     <div style={{ paddingTop:24 }}>
       <h2 style={{ color:"#1F4E79", fontSize:24, fontWeight:800, margin:"0 0 8px" }}>Road Closures & Advisories</h2>
       <p style={{ color:"#666", fontSize:14, marginBottom:16 }}>Current road closure notices organised by parish.</p>
+
+      {/* Map */}
+      <div style={{ background:"#fff", borderRadius:12, border:"1px solid #e8e8e8", overflow:"hidden", marginBottom:20 }}>
+        <MapContainer center={[18.15, -77.3]} zoom={8} style={{ height:280 }} scrollWheelZoom={true}>
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; OpenStreetMap contributors' />
+          {closures.filter(c => c.lat).map(c => (
+            <CircleMarker key={c.id} center={[c.lat, c.lng]} radius={10} pathOptions={{ color:"#fff", weight:2, fillColor:SEVERITY_COLORS[c.severity], fillOpacity:1 }}>
+              <Popup>
+                <div style={{ minWidth:160 }}>
+                  <div style={{ fontWeight:700, fontSize:13, color:"#1F4E79", marginBottom:4 }}>{c.road}</div>
+                  <div style={{ fontSize:12, color:"#666", marginBottom:4 }}>{c.reason}</div>
+                  <div style={{ fontSize:11, color:"#888" }}>{c.start} to {c.end}</div>
+                </div>
+              </Popup>
+            </CircleMarker>
+          ))}
+        </MapContainer>
+      </div>
+
       <select value={filter} onChange={e => setFilter(e.target.value)} aria-label="Filter closures by parish" style={{...inputStyle, maxWidth:300, marginBottom:20 }}>
         <option value="">All Parishes</option>
         {PARISHES.map(p => <option key={p}>{p}</option>)}
@@ -743,13 +769,48 @@ function ClosuresPage({ closures }) {
 }
 
 // ===== NEWS =====
-function NewsPage() {
+function NewsPage({ navigate }) {
+  const [selectedArticle, setSelectedArticle] = useState(null);
+
+  if (selectedArticle) {
+    const n = selectedArticle;
+    return (
+      <div style={{ paddingTop:24 }}>
+        <button onClick={() => setSelectedArticle(null)} style={{ background:"none", border:"none", color:"#2E75B6", fontSize:14, cursor:"pointer", padding:0, marginBottom:16 }}>← Back to Newsroom</button>
+        <article style={{ background:"#fff", borderRadius:12, padding:32, boxShadow:"0 2px 12px rgba(0,0,0,0.06)", border:"1px solid #e8e8e8" }}>
+          <div style={{ display:"flex", gap:8, alignItems:"center", marginBottom:12, flexWrap:"wrap" }}>
+            <span style={{ background:"#E8F0FE", color:"#1F4E79", padding:"4px 12px", borderRadius:20, fontSize:12, fontWeight:600 }}>{n.category}</span>
+            <span style={{ fontSize:13, color:"#888" }}>{n.parish}</span>
+            <span style={{ fontSize:13, color:"#888", marginLeft:"auto" }}><time dateTime={n.date}>{n.date}</time></span>
+          </div>
+          <h1 style={{ color:"#1F4E79", fontSize:24, fontWeight:800, margin:"0 0 16px", lineHeight:1.3 }}>{n.title}</h1>
+          <div style={{ borderLeft:"4px solid #2E75B6", paddingLeft:20, marginBottom:20 }}>
+            <p style={{ fontSize:15, color:"#444", lineHeight:1.8, margin:0 }}>{n.excerpt}</p>
+          </div>
+          <div style={{ background:"#f8f9fa", borderRadius:8, padding:20, fontSize:14, color:"#444", lineHeight:1.8 }}>
+            <p style={{ margin:"0 0 12px" }}>The National Works Agency continues to deliver on its mandate to maintain and improve Jamaica's road infrastructure. This initiative is part of the agency's ongoing commitment to ensuring safe and reliable road networks across all 14 parishes.</p>
+            <p style={{ margin:"0 0 12px" }}>NWA CEO Eng. E. George Lee has indicated that the agency will continue to prioritise projects that have the greatest impact on road safety and economic productivity. "We remain committed to delivering quality infrastructure that serves the Jamaican people," said Eng. Lee.</p>
+            <p style={{ margin:0 }}>Members of the public are encouraged to report road issues through the NWA's online complaint portal or by contacting the agency directly at (876) 929-3380.</p>
+          </div>
+          <div style={{ display:"flex", gap:12, marginTop:24, paddingTop:16, borderTop:"1px solid #eee" }}>
+            <button onClick={() => setSelectedArticle(null)} style={{ background:"#1F4E79", color:"#fff", border:"none", padding:"10px 24px", borderRadius:8, fontWeight:600, cursor:"pointer", fontSize:13 }}>← Back to Newsroom</button>
+            <button onClick={() => navigate("report")} style={{ background:"#f0f0f0", border:"none", padding:"10px 24px", borderRadius:8, cursor:"pointer", fontSize:13 }}>Report an Issue</button>
+          </div>
+        </article>
+      </div>
+    );
+  }
+
   return (
     <div style={{ paddingTop:24 }}>
       <h2 style={{ color:"#1F4E79", fontSize:24, fontWeight:800, margin:"0 0 8px" }}>Newsroom</h2>
       <p style={{ color:"#666", fontSize:14, marginBottom:20 }}>Latest news, press releases, and updates from the National Works Agency.</p>
       <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
-        {NEWS.map(n => <NewsCard key={n.id} news={n} full />)}
+        {NEWS.map(n => (
+          <div key={n.id} {...clickable(() => setSelectedArticle(n))} style={{ cursor:"pointer" }}>
+            <NewsCard news={n} full />
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -1253,6 +1314,39 @@ function EmergencyPage({ closures, navigate }) {
         ))}
       </div>
 
+      {/* Parish Alert Map */}
+      <div style={{ background:"#fff", borderRadius:12, border:"1px solid #e8e8e8", overflow:"hidden", marginBottom:24 }}>
+        <div style={{ padding:"12px 20px", borderBottom:"1px solid #eee", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+          <span style={{ fontWeight:700, color:"#1F4E79", fontSize:14 }}>Parish Alert Map</span>
+          <div style={{ display:"flex", gap:10 }}>
+            {Object.entries(ALERT_LEVEL_LABELS).map(([k, v]) => (
+              <div key={k} style={{ display:"flex", alignItems:"center", gap:4, fontSize:11 }}>
+                <div style={{ width:10, height:10, borderRadius:"50%", background:ALERT_LEVEL_COLORS[k] }} />
+                <span style={{ color:"#666" }}>{v}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <MapContainer center={[18.15, -77.3]} zoom={8} style={{ height:300 }} scrollWheelZoom={true}>
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; OpenStreetMap contributors' />
+          {PARISHES.map(p => {
+            const level = PARISH_ALERT_LEVELS[p] || "normal";
+            const coords = PARISH_COORDS[p];
+            if (!coords) return null;
+            return (
+              <CircleMarker key={p} center={coords} radius={level === "emergency" ? 16 : level === "warning" ? 13 : level === "advisory" ? 11 : 8} pathOptions={{ color:"#fff", weight:2, fillColor:ALERT_LEVEL_COLORS[level], fillOpacity:0.85 }}>
+                <Popup>
+                  <div style={{ minWidth:140 }}>
+                    <div style={{ fontWeight:700, fontSize:14, color:"#1F4E79", marginBottom:4 }}>{p}</div>
+                    <span style={{ background:ALERT_LEVEL_COLORS[level], color:"#fff", padding:"2px 10px", borderRadius:12, fontSize:11, fontWeight:700 }}>{ALERT_LEVEL_LABELS[level]}</span>
+                  </div>
+                </Popup>
+              </CircleMarker>
+            );
+          })}
+        </MapContainer>
+      </div>
+
       <div className="nwa-grid-2col" style={{ display:"grid", gridTemplateColumns:"1fr 320px", gap:20 }}>
         {/* Active Incidents */}
         <div>
@@ -1302,6 +1396,123 @@ function EmergencyPage({ closures, navigate }) {
             ))}
           </div>
           <button onClick={() => navigate("closures")} style={{ marginTop:16, background:"#1F4E79", color:"#fff", border:"none", padding:"10px 20px", borderRadius:8, fontWeight:600, cursor:"pointer", width:"100%", fontSize:13 }}>View All Road Closures →</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ===== ABOUT PAGE =====
+function AboutPage({ navigate }) {
+  return (
+    <div style={{ paddingTop:24 }}>
+      <h2 style={{ color:"#1F4E79", fontSize:24, fontWeight:800, margin:"0 0 8px" }}>About the National Works Agency</h2>
+      <p style={{ color:"#666", fontSize:14, marginBottom:24 }}>An Executive Agency under the Ministry of Economic Growth & Infrastructure Development.</p>
+
+      <div style={{ background:"#fff", borderRadius:12, padding:32, boxShadow:"0 2px 8px rgba(0,0,0,0.06)", marginBottom:24 }}>
+        <h3 style={{ color:"#1F4E79", fontSize:18, fontWeight:700, margin:"0 0 12px" }}>Our Mandate</h3>
+        <p style={{ fontSize:14, color:"#444", lineHeight:1.8, margin:"0 0 16px" }}>The National Works Agency (NWA) is the Government of Jamaica's executive agency responsible for the management, maintenance, and development of the island's road network. Established under the Executive Agencies Act, the NWA manages over 5,000 kilometres of main roads across Jamaica's 14 parishes.</p>
+        <p style={{ fontSize:14, color:"#444", lineHeight:1.8, margin:0 }}>The agency's core functions include road construction and rehabilitation, bridge maintenance, drainage management, traffic management, and emergency response during natural disasters.</p>
+      </div>
+
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(250px, 1fr))", gap:20, marginBottom:24 }}>
+        {[
+          { title:"Mission", text:"To provide a safe, reliable, and efficient road network that supports Jamaica's economic and social development through professional management and sustainable practices." },
+          { title:"Vision", text:"To be a world-class road management agency recognised for excellence in infrastructure delivery, innovation, and public service." },
+          { title:"Core Values", text:"Integrity, Professionalism, Accountability, Innovation, and Service Excellence in all our operations across every parish." },
+        ].map(v => (
+          <div key={v.title} style={{ background:"#fff", borderRadius:12, padding:24, boxShadow:"0 2px 8px rgba(0,0,0,0.06)", borderTop:"4px solid #1F4E79" }}>
+            <div style={{ fontWeight:700, color:"#1F4E79", fontSize:16, marginBottom:8 }}>{v.title}</div>
+            <p style={{ fontSize:13, color:"#444", lineHeight:1.7, margin:0 }}>{v.text}</p>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ background:"#fff", borderRadius:12, padding:32, boxShadow:"0 2px 8px rgba(0,0,0,0.06)", marginBottom:24 }}>
+        <h3 style={{ color:"#1F4E79", fontSize:18, fontWeight:700, margin:"0 0 16px" }}>Key Facts</h3>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(160px, 1fr))", gap:16 }}>
+          {[
+            { value:"5,000+", label:"Kilometres of main roads", color:"#1F4E79" },
+            { value:"14", label:"Parishes served", color:"#2E75B6" },
+            { value:"800+", label:"Bridges maintained", color:"#D4A843" },
+            { value:"24/7", label:"Emergency operations", color:"#C62828" },
+          ].map(f => (
+            <div key={f.label} style={{ textAlign:"center", padding:16, background:"#f8f9fa", borderRadius:8 }}>
+              <div style={{ fontSize:32, fontWeight:800, color:f.color }}>{f.value}</div>
+              <div style={{ fontSize:12, color:"#888", marginTop:4 }}>{f.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ display:"flex", gap:12 }}>
+        <button onClick={() => navigate("projects")} style={{ background:"#1F4E79", color:"#fff", border:"none", padding:"12px 24px", borderRadius:8, fontWeight:600, cursor:"pointer", fontSize:13 }}>View Our Projects →</button>
+        <button onClick={() => navigate("contact")} style={{ background:"#f0f0f0", border:"none", padding:"12px 24px", borderRadius:8, cursor:"pointer", fontSize:13 }}>Contact Us</button>
+      </div>
+    </div>
+  );
+}
+
+// ===== CONTACT PAGE =====
+function ContactPage() {
+  return (
+    <div style={{ paddingTop:24 }}>
+      <h2 style={{ color:"#1F4E79", fontSize:24, fontWeight:800, margin:"0 0 8px" }}>Contact Us</h2>
+      <p style={{ color:"#666", fontSize:14, marginBottom:24 }}>Reach the National Works Agency through any of the channels below.</p>
+
+      <div className="nwa-grid-2col" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:24 }}>
+        <div>
+          <div style={{ background:"#fff", borderRadius:12, padding:24, boxShadow:"0 2px 8px rgba(0,0,0,0.06)", marginBottom:16 }}>
+            <h3 style={{ color:"#1F4E79", fontSize:16, fontWeight:700, margin:"0 0 16px" }}>Head Office</h3>
+            {[
+              { icon:"📍", label:"Address", value:"140 Maxfield Avenue, Kingston 10, Jamaica" },
+              { icon:"📞", label:"Telephone", value:"(876) 929-3380 / 929-3506" },
+              { icon:"📠", label:"Fax", value:"(876) 929-2731" },
+              { icon:"📧", label:"Email", value:"info@nwa.gov.jm" },
+              { icon:"🌐", label:"Website", value:"www.nwa.gov.jm" },
+              { icon:"🕐", label:"Hours", value:"Mon–Fri: 8:30 AM – 5:00 PM" },
+            ].map(c => (
+              <div key={c.label} style={{ display:"flex", gap:12, marginBottom:12, fontSize:13 }}>
+                <span style={{ fontSize:16 }} aria-hidden="true">{c.icon}</span>
+                <div>
+                  <div style={{ fontWeight:600, color:"#1F4E79", marginBottom:2 }}>{c.label}</div>
+                  <div style={{ color:"#444" }}>{c.value}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ background:"#FFF8E1", borderRadius:12, padding:16, border:"1px solid #FFE082", fontSize:13, color:"#6D4C00", lineHeight:1.6 }}>
+            <strong>Emergency Hotline:</strong> For after-hours road emergencies, call <strong>(876) 929-3380</strong>. The NWA Emergency Operations Centre operates 24/7 during adverse weather events.
+          </div>
+        </div>
+
+        <div>
+          <div style={{ background:"#fff", borderRadius:12, padding:24, boxShadow:"0 2px 8px rgba(0,0,0,0.06)", marginBottom:16 }}>
+            <h3 style={{ color:"#1F4E79", fontSize:16, fontWeight:700, margin:"0 0 16px" }}>Send Us a Message</h3>
+            <FormField label="Full Name"><input placeholder="Your name" style={inputStyle} /></FormField>
+            <FormField label="Email"><input placeholder="your@email.com" type="email" style={inputStyle} /></FormField>
+            <FormField label="Subject">
+              <select style={inputStyle}>
+                <option>General Inquiry</option>
+                <option>Road Complaint</option>
+                <option>Project Information</option>
+                <option>Media / Press</option>
+                <option>Tenders / Procurement</option>
+              </select>
+            </FormField>
+            <FormField label="Message"><textarea placeholder="Type your message..." rows={4} style={{...inputStyle, resize:"vertical"}} /></FormField>
+            <button style={{ background:"#1F4E79", color:"#fff", border:"none", padding:"12px 24px", borderRadius:8, fontWeight:700, cursor:"pointer", width:"100%", fontSize:14 }}>Send Message</button>
+          </div>
+
+          <div style={{ borderRadius:12, overflow:"hidden" }}>
+            <MapContainer center={[18.0165, -76.7955]} zoom={16} style={{ height:180 }} scrollWheelZoom={false}>
+              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; OpenStreetMap contributors' />
+              <CircleMarker center={[18.0165, -76.7955]} radius={10} pathOptions={{ color:"#fff", weight:2, fillColor:"#1F4E79", fillOpacity:1 }}>
+                <Popup>NWA Head Office<br/>140 Maxfield Avenue</Popup>
+              </CircleMarker>
+            </MapContainer>
+          </div>
         </div>
       </div>
     </div>
