@@ -488,7 +488,7 @@ function ReportPage({ formData, setFormData, submitted, setSubmitted, complaints
     const id = `NWA-${new Date().toISOString().slice(0,10).replace(/-/g,"")}-${String(Date.now()).slice(-4)}`;
     const lat = pin ? pin.lat : 18.0 + Math.random() * 0.5;
     const lng = pin ? pin.lng : -76.8 - Math.random() * 0.5;
-    const newComplaint = { id, category:formData.category, desc:formData.desc, parish:formData.parish, status:"pending", date:new Date().toISOString().slice(0,10), lat, lng };
+    const newComplaint = { id, category:formData.category, desc:formData.desc, parish:formData.parish, status:"pending", date:new Date().toISOString().slice(0,10), lat, lng, priority:"standard" };
     setComplaints(prev => [...prev, newComplaint]);
     setSubmitted(id);
   };
@@ -1491,6 +1491,7 @@ function AboutPage({ navigate }) {
 
 // ===== CONTACT PAGE =====
 function ContactPage() {
+  const [sent, setSent] = useState(false);
   return (
     <div style={{ paddingTop:24 }}>
       <h2 style={{ color:"#1F4E79", fontSize:24, fontWeight:800, margin:"0 0 8px" }}>Contact Us</h2>
@@ -1538,7 +1539,15 @@ function ContactPage() {
               </select>
             </FormField>
             <FormField label="Message"><textarea placeholder="Type your message..." rows={4} style={{...inputStyle, resize:"vertical"}} /></FormField>
-            <button style={{ background:"#1F4E79", color:"#fff", border:"none", padding:"12px 24px", borderRadius:8, fontWeight:700, cursor:"pointer", width:"100%", fontSize:14 }}>Send Message</button>
+            {sent ? (
+              <div style={{ background:"#E8F5E9", borderRadius:8, padding:"16px 20px", textAlign:"center", border:"1px solid #A5D6A7" }}>
+                <div style={{ fontSize:20, marginBottom:4 }}>✅</div>
+                <div style={{ fontWeight:700, color:"#2E7D32", fontSize:14 }}>Message Sent Successfully</div>
+                <div style={{ fontSize:12, color:"#4CAF50", marginTop:4 }}>We'll respond within 2 business days.</div>
+              </div>
+            ) : (
+              <button onClick={() => setSent(true)} style={{ background:"#1F4E79", color:"#fff", border:"none", padding:"12px 24px", borderRadius:8, fontWeight:700, cursor:"pointer", width:"100%", fontSize:14 }}>Send Message</button>
+            )}
           </div>
 
           <div style={{ borderRadius:12, overflow:"hidden" }}>
