@@ -888,6 +888,11 @@ function DashboardPage({ complaints, setComplaints, navigate }) {
     setCaseNote("");
   };
 
+  // Search & filter
+  const [dashSearch, setDashSearch] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterPriority, setFilterPriority] = useState("");
+
   // Sorting
   const [sortCol, setSortCol] = useState("date");
   const [sortAsc, setSortAsc] = useState(false);
@@ -902,7 +907,17 @@ function DashboardPage({ complaints, setComplaints, navigate }) {
   const PRIORITY_ORDER = { high:0, standard:1, low:2 };
 
   const sortedComplaints = useMemo(() => {
-    const arr = [...complaints];
+    let arr = [...complaints];
+    // Filter by search
+    if (dashSearch.trim()) {
+      const q = dashSearch.toLowerCase();
+      arr = arr.filter(c => c.id.toLowerCase().includes(q) || c.category.toLowerCase().includes(q) || c.parish.toLowerCase().includes(q) || c.desc.toLowerCase().includes(q) || (c.assignedTo || "").toLowerCase().includes(q));
+    }
+    // Filter by status
+    if (filterStatus) arr = arr.filter(c => c.status === filterStatus);
+    // Filter by priority
+    if (filterPriority) arr = arr.filter(c => (c.priority || "standard") === filterPriority);
+    // Sort
     arr.sort((a, b) => {
       let va, vb;
       switch (sortCol) {
@@ -919,7 +934,7 @@ function DashboardPage({ complaints, setComplaints, navigate }) {
       return sortAsc ? va - vb : vb - va;
     });
     return arr;
-  }, [complaints, sortCol, sortAsc]);
+  }, [complaints, sortCol, sortAsc, dashSearch, filterStatus, filterPriority]);
 
   const total = complaints.length;
   const open = complaints.filter(c => c.status !== "resolved").length;
@@ -992,11 +1007,32 @@ function DashboardPage({ complaints, setComplaints, navigate }) {
         </div>
       </div>
 
+      {/* Search & Filters */}
+      <div style={{ background:"#fff", borderRadius:12, padding:"16px 20px", boxShadow:"0 2px 8px rgba(0,0,0,0.06)", marginBottom:20, display:"flex", gap:12, alignItems:"center", flexWrap:"wrap" }}>
+        <div style={{ flex:1, minWidth:200, position:"relative" }}>
+          <input value={dashSearch} onChange={e => setDashSearch(e.target.value)} placeholder="Search by ID, category, parish, description, or assignee..." style={{...inputStyle, paddingLeft:36, width:"100%", boxSizing:"border-box"}} />
+          <span style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", fontSize:14, color:"#888", pointerEvents:"none" }}>🔍</span>
+        </div>
+        <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} style={{...inputStyle, width:"auto", minWidth:140 }}>
+          <option value="">All Statuses</option>
+          {Object.entries(CASE_STATUS_LABELS).map(([k,v]) => <option key={k} value={k}>{v}</option>)}
+        </select>
+        <select value={filterPriority} onChange={e => setFilterPriority(e.target.value)} style={{...inputStyle, width:"auto", minWidth:120 }}>
+          <option value="">All Priorities</option>
+          <option value="high">High</option>
+          <option value="standard">Standard</option>
+          <option value="low">Low</option>
+        </select>
+        {(dashSearch || filterStatus || filterPriority) && (
+          <button onClick={() => { setDashSearch(""); setFilterStatus(""); setFilterPriority(""); }} style={{ background:"#f0f0f0", border:"none", padding:"10px 16px", borderRadius:8, cursor:"pointer", fontSize:12, fontWeight:600, color:"#666", whiteSpace:"nowrap" }}>Clear Filters</button>
+        )}
+      </div>
+
       <div className="nwa-grid-2col" style={{ display:"grid", gridTemplateColumns:"1fr 300px", gap:20 }}>
         {/* Ticket Table */}
         <div style={{ background:"#fff", borderRadius:12, boxShadow:"0 2px 8px rgba(0,0,0,0.06)", overflow:"hidden" }}>
           <div style={{ padding:"16px 20px", borderBottom:"1px solid #eee", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-            <span style={{ fontWeight:700, color:"#1F4E79", fontSize:14 }}>All Cases ({total})</span>
+            <span style={{ fontWeight:700, color:"#1F4E79", fontSize:14 }}>{sortedComplaints.length === total ? `All Cases (${total})` : `${sortedComplaints.length} of ${total} Cases`}</span>
             <span style={{ fontSize:11, color:"#888" }}>SLA: High 1d · Standard 3d · Low 5d</span>
           </div>
           <div style={{ overflowX:"auto" }}>
