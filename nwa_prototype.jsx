@@ -145,7 +145,7 @@ export default function NWAPrototype() {
     if (p !== "projects") setSelectedParish("");
     setTrackResult(null); setTrackId("");
     if (p !== "report") { setSubmitted(null); setFormData({ category:"Pothole", desc:"", parish:"Kingston", name:"", email:"" }); }
-    if (p !== "cms") setCmsStep(0);
+    if (p !== "portal") setCmsStep(0);
     setMenuOpen(false);
     setSearchOpen(false);
     setSearchQuery("");
@@ -247,8 +247,7 @@ export default function NWAPrototype() {
               { label:"Track", p:"track" },
               { label:"Closures", p:"closures" },
               { label:"News", p:"news" },
-              { label:"Dashboard", p:"dashboard" },
-              { label:"CMS Demo", p:"cms" },
+              { label:"Staff Portal", p:"portal" },
             ].map(n => (
               <button key={n.p} onClick={() => navigate(n.p)} style={{ background: page === n.p ? "rgba(255,255,255,0.15)" : "transparent", color:"#fff", border:"none", padding:"8px 10px", borderRadius:6, cursor:"pointer", fontSize:12, fontWeight: page === n.p ? 700 : 400, transition:"all 0.2s" }} aria-current={page === n.p ? "page" : undefined}>
                 {n.label}
@@ -268,8 +267,7 @@ export default function NWAPrototype() {
         {page === "track" && <TrackPage trackId={trackId} setTrackId={setTrackId} trackResult={trackResult} setTrackResult={setTrackResult} complaints={complaints} />}
         {page === "closures" && <ClosuresPage closures={closures} navigate={navigate} />}
         {page === "news" && <NewsPage navigate={navigate} />}
-        {page === "cms" && <CMSDemo cmsStep={cmsStep} setCmsStep={setCmsStep} closures={closures} setClosures={setClosures} newClosure={newClosure} setNewClosure={setNewClosure} navigate={navigate} />}
-        {page === "dashboard" && <DashboardPage complaints={complaints} setComplaints={setComplaints} navigate={navigate} />}
+        {page === "portal" && <StaffPortalPage complaints={complaints} setComplaints={setComplaints} cmsStep={cmsStep} setCmsStep={setCmsStep} closures={closures} setClosures={setClosures} newClosure={newClosure} setNewClosure={setNewClosure} navigate={navigate} />}
         {page === "emergency" && <EmergencyPage closures={closures} navigate={navigate} />}
         {page === "about" && <AboutPage navigate={navigate} />}
         {page === "contact" && <ContactPage />}
@@ -347,8 +345,7 @@ function HomePage({ navigate }) {
           { icon:"📢", label:"News", p:"news", desc:"Press releases" },
           { icon:"🔍", label:"Track Request", p:"track", desc:"Check status" },
           { icon:"🚨", label:"Emergency", p:"emergency", desc:"Disaster operations" },
-          { icon:"📊", label:"Staff Portal", p:"dashboard", desc:"Case management" },
-          { icon:"💻", label:"Content Mgmt", p:"cms", desc:"Editorial workflow" },
+          { icon:"📊", label:"Staff Portal", p:"portal", desc:"Dashboard & CMS" },
         ].map(q => (
           <div key={q.p} {...clickable(() => navigate(q.p))} aria-label={q.label} style={{ background:"#fff", borderRadius:12, padding:"20px 12px", textAlign:"center", cursor:"pointer", boxShadow:"0 2px 8px rgba(0,0,0,0.06)", border:"1px solid #e8e8e8", transition:"all 0.2s" }}
             onMouseEnter={e => { e.currentTarget.style.transform="translateY(-4px)"; e.currentTarget.style.boxShadow="0 8px 24px rgba(0,0,0,0.12)"; }}
@@ -858,6 +855,30 @@ function CMSDemo({ cmsStep, setCmsStep, closures, setClosures, newClosure, setNe
           {cmsStep === 5 && (<button onClick={handleClosureCreate} style={{ background:"#C62828", color:"#fff", border:"none", padding:"10px 24px", borderRadius:8, fontWeight:600, cursor:"pointer" }}>🚨 Publish & Push to Homepage</button>)}
         </div>
       </div>
+    </div>
+  );
+}
+
+// ===== STAFF PORTAL (WRAPPER) =====
+function StaffPortalPage({ complaints, setComplaints, cmsStep, setCmsStep, closures, setClosures, newClosure, setNewClosure, navigate }) {
+  const [tab, setTab] = useState("dashboard");
+  return (
+    <div>
+      <div style={{ background:"#1F4E79", color:"#fff", padding:"14px 20px", borderRadius:"10px 10px 0 0", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:8 }}>
+        <span style={{ fontWeight:700, fontSize:15 }}>Staff Portal</span>
+        <span style={{ fontSize:12, opacity:0.7 }}>Logged in as staff</span>
+      </div>
+      <div style={{ display:"flex", gap:0, borderBottom:"2px solid #e0e0e0", background:"#f5f7fa" }}>
+        {[{ key:"dashboard", label:"Dashboard" },{ key:"cms", label:"CMS" }].map(t => (
+          <button key={t.key} onClick={() => setTab(t.key)} style={{ flex:1, padding:"12px 0", fontWeight: tab === t.key ? 700 : 400, fontSize:14, color: tab === t.key ? "#1F4E79" : "#666", background:"transparent", border:"none", borderBottom: tab === t.key ? "3px solid #1F4E79" : "3px solid transparent", cursor:"pointer", transition:"all 0.2s" }}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+      {tab === "dashboard"
+        ? <DashboardPage complaints={complaints} setComplaints={setComplaints} navigate={navigate} />
+        : <CMSDemo cmsStep={cmsStep} setCmsStep={setCmsStep} closures={closures} setClosures={setClosures} newClosure={newClosure} setNewClosure={setNewClosure} navigate={navigate} />
+      }
     </div>
   );
 }
