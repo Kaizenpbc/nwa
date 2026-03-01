@@ -41,6 +41,27 @@ body {
   transition: width 0.8s ease-in-out;
 }
 
+/* Animated ping for live indicator */
+@keyframes ping {
+  75%, 100% { transform: scale(2); opacity: 0; }
+}
+.animate-ping {
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Line clamp for mobile cards */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Recharts responsive fix */
+.recharts-wrapper {
+  max-width: 100%;
+}
+
 html {
   scroll-behavior: smooth;
 }
