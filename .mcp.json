@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "nwa-dashboard": {
+      "command": "npx",
+      "args": ["tsx", "mcp-server.ts"],
+      "cwd": "/home/user/nwa"
+    }
+  }
+}
