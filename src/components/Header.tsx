@@ -11,6 +11,7 @@ const navItems = [
   { label: "Report Issue", href: "/complaints" },
   { label: "Track", href: "/complaints/track" },
   { label: "Closures", href: "/closures" },
+  { label: "Live Events", href: "/events" },
   { label: "News", href: "/news" },
   { label: "Staff Portal", href: "/portal" },
 ];
