@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import {
   COMPLAINTS_INIT,
   CLOSURES,
@@ -15,6 +16,35 @@ import {
   getSlaDaysRemaining,
 } from "@/data/mock";
 import type { Complaint } from "@/data/mock";
+import AnimatedCounter from "@/components/dashboard/AnimatedCounter";
+import LiveFeed from "@/components/dashboard/LiveFeed";
+import ComplaintHeatmap from "@/components/dashboard/ComplaintHeatmap";
+
+// Lazy-load Recharts components (large bundle, client-only)
+const StatusPieChart = dynamic(
+  () => import("@/components/dashboard/DashboardCharts").then((m) => m.StatusPieChart),
+  { ssr: false },
+);
+const CategoryBarChart = dynamic(
+  () => import("@/components/dashboard/DashboardCharts").then((m) => m.CategoryBarChart),
+  { ssr: false },
+);
+const ParishBarChart = dynamic(
+  () => import("@/components/dashboard/DashboardCharts").then((m) => m.ParishBarChart),
+  { ssr: false },
+);
+const SlaOverviewChart = dynamic(
+  () => import("@/components/dashboard/DashboardCharts").then((m) => m.SlaOverviewChart),
+  { ssr: false },
+);
+const SubmissionsTimeline = dynamic(
+  () => import("@/components/dashboard/DashboardCharts").then((m) => m.SubmissionsTimeline),
+  { ssr: false },
+);
+const PriorityChart = dynamic(
+  () => import("@/components/dashboard/DashboardCharts").then((m) => m.PriorityChart),
+  { ssr: false },
+);
 
 /* ------------------------------------------------------------------ */
 /*  Types & Constants                                                  */
@@ -61,11 +91,13 @@ function KpiCard({
 }) {
   return (
     <div
-      className="bg-white rounded-xl p-5 shadow-sm flex flex-col items-center text-center"
+      className="bg-white rounded-xl p-5 shadow-sm flex flex-col items-center text-center hover:shadow-md transition-shadow"
       style={{ borderTop: `4px solid ${borderColor}` }}
     >
       <span className="text-2xl mb-1">{icon}</span>
-      <span className="text-3xl font-bold text-gray-900">{value}</span>
+      <span className="text-3xl font-bold text-gray-900">
+        <AnimatedCounter value={value} />
+      </span>
       <span className="text-xs text-gray-500 mt-1 font-medium uppercase tracking-wide">
         {label}
       </span>
@@ -625,6 +657,28 @@ export default function PortalPage() {
             <StatusBreakdownBar complaints={complaints} />
           </div>
 
+          {/* Charts Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
+            <StatusPieChart complaints={complaints} />
+            <CategoryBarChart complaints={complaints} />
+            <SlaOverviewChart complaints={complaints} />
+          </div>
+
+          {/* Timeline + Parish + Priority */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
+            <SubmissionsTimeline complaints={complaints} />
+            <ParishBarChart complaints={complaints} />
+            <PriorityChart complaints={complaints} />
+          </div>
+
+          {/* Map + Live Feed */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+            <div className="lg:col-span-2">
+              <ComplaintHeatmap complaints={complaints} height="380px" />
+            </div>
+            <LiveFeed complaints={complaints} />
+          </div>
+
           {/* Main content: table + sidebar */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Table area (3 cols) */}
@@ -678,8 +732,8 @@ export default function PortalPage() {
                 </span>
               </div>
 
-              {/* Ticket Table */}
-              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              {/* Ticket Table — hidden on mobile, shown md+ */}
+              <div className="bg-white rounded-xl shadow-sm overflow-hidden hidden md:block">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
@@ -793,6 +847,66 @@ export default function PortalPage() {
                     </tbody>
                   </table>
                 </div>
+              </div>
+
+              {/* Mobile Complaint Cards — shown only on small screens */}
+              <div className="md:hidden space-y-3">
+                {filteredComplaints.map((c) => (
+                  <div
+                    key={c.id}
+                    className="bg-white rounded-xl p-4 shadow-sm active:bg-blue-50 transition-colors cursor-pointer"
+                    onClick={() => openDetailModal(c)}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-mono text-xs font-semibold text-nwa-blue">
+                        {c.id.slice(-8)}
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        {new Date(c.date).toLocaleDateString("en-JM", {
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-700 mb-2 line-clamp-2">
+                      {c.desc}
+                    </p>
+                    <div className="flex flex-wrap items-center gap-2 mb-3">
+                      <PriorityBadge priority={c.priority} />
+                      <CaseStatusBadge status={c.status} />
+                      <SlaBadge complaint={c} />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-500">
+                        {c.category} — {c.parish}
+                      </span>
+                      <div
+                        className="flex gap-1"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <button
+                          onClick={() => openAssignModal(c)}
+                          className="px-2.5 py-1 text-xs font-medium bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
+                        >
+                          Assign
+                        </button>
+                        {c.status !== "resolved" && (
+                          <button
+                            onClick={() => openCloseoutModal(c)}
+                            className="px-2.5 py-1 text-xs font-medium bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors"
+                          >
+                            Close
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {filteredComplaints.length === 0 && (
+                  <div className="bg-white rounded-xl p-8 shadow-sm text-center text-gray-400">
+                    No complaints match your filters.
+                  </div>
+                )}
               </div>
             </div>
 
