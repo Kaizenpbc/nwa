@@ -7,7 +7,7 @@
     },
     "nwa-dashboard-http": {
       "type": "http",
-      "url": "https://<domain>/api/mcp",
+      "url": "https://nwa.gov.jm/api/mcp",
       "headers": {
         "Authorization": "Bearer ${NWA_STAFF_TOKEN}"
       }
