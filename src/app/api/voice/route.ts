@@ -16,6 +16,15 @@ import {
   getSlaStatus,
 } from "@/data/mock";
 
+const STAFF_TOKEN = process.env.NWA_STAFF_TOKEN ?? "";
+
+function isStaff(req: NextRequest): boolean {
+  if (!STAFF_TOKEN) return false;
+  const auth = req.headers.get("authorization") ?? "";
+  const token = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
+  return token === STAFF_TOKEN;
+}
+
 // ── Known Jamaican road names (derived from NWA data) ────────
 
 const NWA_ROADS = [
@@ -146,6 +155,16 @@ function buildParishResponse(parish: string): string {
   return `${parish} overview: ${openComplaints.length} open complaint${openComplaints.length !== 1 ? "s" : ""}, ${projects.length} project${projects.length !== 1 ? "s" : ""}, ${closures.length} road closure${closures.length !== 1 ? "s" : ""}, ${active.length} active emergency${active.length !== 1 ? " events" : " event"}.`;
 }
 
+function buildParishResponsePublic(parish: string): string {
+  const p = parish.toLowerCase();
+  const projects = PROJECTS.filter((pr) => pr.parish.toLowerCase() === p);
+  const closures = CLOSURES.filter((cl) => cl.parish.toLowerCase() === p);
+  const emergencies = EMERGENCY_EVENTS.filter((e) => e.parishes.some((ep) => ep.toLowerCase() === p));
+  const active = emergencies.filter((e) => e.status === "active");
+
+  return `${parish} overview: ${projects.length} project${projects.length !== 1 ? "s" : ""}, ${closures.length} road closure${closures.length !== 1 ? "s" : ""}, ${active.length} active emergency${active.length !== 1 ? " events" : " event"}.`;
+}
+
 function buildSummaryResponse(): string {
   const total = COMPLAINTS_INIT.length;
   const open = COMPLAINTS_INIT.filter((c) => c.status !== "resolved").length;
@@ -165,6 +184,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing query" }, { status: 400 });
   }
 
+  const staff = isStaff(req);
+
   // Road scope check — reject queries about roads not in NWA Jamaica data
   const roadCheck = detectRoad(query);
   if (roadCheck === "NOT_FOUND") {
@@ -175,6 +196,15 @@ export async function POST(req: NextRequest) {
 
   const intent = detectIntent(query);
   const parish = detectParish(query);
+
+  // Staff-only intents
+  if (!staff && (intent === "complaints" || intent === "summary")) {
+    return NextResponse.json({
+      response: "Complaint and dashboard data is restricted to NWA staff. Please authenticate to access this information.",
+      intent: "unauthorized",
+      parish,
+    }, { status: 403 });
+  }
 
   let response: string;
   switch (intent) {
@@ -194,7 +224,9 @@ export async function POST(req: NextRequest) {
       response = buildComplaintsResponse(parish);
       break;
     case "parish":
-      response = buildParishResponse(parish!);
+      response = staff
+        ? buildParishResponse(parish!)
+        : buildParishResponsePublic(parish!);
       break;
     case "summary":
       response = buildSummaryResponse();
