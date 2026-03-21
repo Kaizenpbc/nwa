@@ -8,6 +8,7 @@ import {
   CASE_STATUS_LABELS,
 } from "@/data/mock";
 import MapView from "@/components/MapView";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 /* ------------------------------------------------------------------ */
 /*  Status timeline steps                                              */
@@ -275,6 +276,7 @@ export default function ReportIssuePage() {
           </p>
         </div>
       </div>
+      <Breadcrumbs crumbs={[{ label: "Report an Issue" }]} />
 
       <div className="max-w-5xl mx-auto px-4 py-8">
         {/* Link to track */}

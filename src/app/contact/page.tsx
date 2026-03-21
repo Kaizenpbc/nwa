@@ -2,18 +2,20 @@
 
 import { useState } from "react";
 import MapView from "@/components/MapView";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export default function ContactPage() {
   const [sent, setSent] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-[#1F4E79] text-white py-8">
+      <div className="bg-nwa-blue text-white py-8">
         <div className="max-w-5xl mx-auto px-4">
           <h1 className="text-2xl font-extrabold mb-1">Contact Us</h1>
           <p className="text-blue-200 text-sm">Reach the National Works Agency through any of the channels below.</p>
         </div>
       </div>
+      <Breadcrumbs crumbs={[{ label: "Contact Us" }]} />
 
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -80,7 +82,7 @@ export default function ContactPage() {
                 ) : (
                   <button
                     onClick={() => setSent(true)}
-                    className="w-full bg-[#1F4E79] text-white py-3 rounded-lg font-bold text-sm hover:bg-[#2E75B6] transition-colors"
+                    className="w-full bg-nwa-blue text-white py-3 rounded-lg font-bold text-sm hover:bg-nwa-blue-light transition-colors"
                   >
                     Send Message
                   </button>

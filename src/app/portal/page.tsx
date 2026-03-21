@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import {
   COMPLAINTS_INIT,
   CLOSURES,
@@ -571,6 +572,7 @@ export default function PortalPage() {
           </div>
         </div>
       </div>
+      <Breadcrumbs crumbs={[{ label: "Staff Portal" }]} />
 
       {/* ── Tab Bar ── */}
       <div className="bg-white border-b border-gray-200 shadow-sm">

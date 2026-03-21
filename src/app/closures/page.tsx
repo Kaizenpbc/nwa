@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import MapView from "@/components/MapView";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { CLOSURES, PARISHES, SEVERITY_COLORS } from "@/data/mock";
 
 const SEVERITY_MARKER_COLOR: Record<string, "red" | "orange" | "blue"> = {
@@ -46,6 +47,7 @@ export default function ClosuresPage() {
           </p>
         </div>
       </div>
+      <Breadcrumbs crumbs={[{ label: "Road Closures" }]} />
 
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
         {/* ── Map ── */}
