@@ -67,14 +67,32 @@ export default function VoicePage() {
 
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
+  const voiceRef = useRef<SpeechSynthesisVoice | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Check browser support
+  // Check browser support and select female voice
   useEffect(() => {
     const hasSpeech = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
     const hasSynth = !!window.speechSynthesis;
     setSupported(hasSpeech && hasSynth);
-    if (hasSynth) synthRef.current = window.speechSynthesis;
+    if (!hasSynth) return;
+    synthRef.current = window.speechSynthesis;
+
+    const pickVoice = () => {
+      const voices = window.speechSynthesis.getVoices();
+      if (!voices.length) return;
+      // Prefer en-JM female, then any en-JM, then any English female
+      const femaleMatch = (v: SpeechSynthesisVoice) => /female|woman/i.test(v.name);
+      voiceRef.current =
+        voices.find((v) => v.lang === "en-JM" && femaleMatch(v)) ??
+        voices.find((v) => v.lang === "en-JM") ??
+        voices.find((v) => v.lang.startsWith("en") && femaleMatch(v)) ??
+        voices.find(femaleMatch) ??
+        null;
+    };
+
+    window.speechSynthesis.onvoiceschanged = pickVoice;
+    pickVoice();
   }, []);
 
   // Auto-scroll messages
@@ -89,7 +107,8 @@ export default function VoicePage() {
     const utt = new SpeechSynthesisUtterance(text);
     utt.lang = "en-JM";
     utt.rate = 0.95;
-    utt.pitch = 1;
+    utt.pitch = 1.15;
+    if (voiceRef.current) utt.voice = voiceRef.current;
     utt.onend = () => {
       setStatus("idle");
       onDone?.();
