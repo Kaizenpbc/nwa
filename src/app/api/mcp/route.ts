@@ -17,7 +17,7 @@ import { registerTools, type UserRole } from "@/lib/mcp-tools";
  * receive full access (complaints + SLA data).  All other requests are
  * treated as public and receive the restricted tool set.
  */
-const STAFF_TOKEN = process.env.NWA_STAFF_TOKEN ?? "";
+const STAFF_TOKEN = process.env.NWA_STAFF_TOKEN;
 
 function resolveRole(request: Request): UserRole {
   if (!STAFF_TOKEN) return "public";
@@ -71,12 +71,6 @@ function normalizeAccept(req: Request): Request {
   });
 }
 
-function createServer(role: UserRole) {
-  const s = new McpServer({ name: "nwa-dashboard", version: "1.0.0" });
-  registerTools(s, role);
-  return s;
-}
-
 // ── HTTP verb handlers ───────────────────────────────────────
 
 export async function OPTIONS() {
@@ -94,7 +88,8 @@ export async function POST(request: Request) {
       enableJsonResponse: true,
     });
 
-    const server = createServer(role);
+    const server = new McpServer({ name: "nwa-dashboard", version: "1.0.0" });
+    registerTools(server, role);
     await server.connect(transport);
 
     const response = await transport.handleRequest(normalized);

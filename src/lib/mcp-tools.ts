@@ -53,7 +53,6 @@ export type UserRole = "staff" | "public";
 // ── Register tools on a server instance ───────────────────────
 
 export function registerTools(server: McpServer, role: UserRole = "public") {
-  // Staff-only: complaint dashboard KPIs including breached/at-risk SLA counts
   if (role === "staff") {
     server.tool(
       "get-dashboard-summary",
@@ -237,7 +236,6 @@ export function registerTools(server: McpServer, role: UserRole = "public") {
         emergencies: { count: emergencies.length, items: emergencies },
       };
 
-      // Complaints and SLA data are restricted to staff
       if (role === "staff") {
         const complaints = COMPLAINTS_INIT.filter((c) => c.parish.toLowerCase() === p).map((c) => ({
           ...c,
