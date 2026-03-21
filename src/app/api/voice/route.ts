@@ -14,8 +14,27 @@ import {
   EMERGENCY_EVENTS,
   PARISHES,
   getSlaStatus,
-  getSlaDaysRemaining,
 } from "@/data/mock";
+
+// ── Known Jamaican road names (derived from NWA data) ────────
+
+const NWA_ROADS = [
+  ...CLOSURES.map((c) => c.road.toLowerCase()),
+  ...PROJECTS.map((p) => p.title.toLowerCase()),
+];
+
+/**
+ * If the query mentions a road name, check it exists in NWA data.
+ * Returns the matched road string, or null if no road is mentioned,
+ * or "NOT_FOUND" if a road was mentioned but isn't in our dataset.
+ */
+function detectRoad(q: string): string | null | "NOT_FOUND" {
+  const t = q.toLowerCase();
+  // Only trigger if query contains road-like language
+  if (!/road|highway|avenue|drive|street|lane|gully|bypass/.test(t)) return null;
+  const match = NWA_ROADS.find((r) => t.includes(r));
+  return match ?? "NOT_FOUND";
+}
 
 // ── Intent detection ─────────────────────────────────────────
 
@@ -66,13 +85,15 @@ function buildClosuresResponse(parish: string | null): string {
   let closures = [...CLOSURES];
   if (parish) closures = closures.filter((c) => c.parish.toLowerCase() === parish.toLowerCase());
 
-  if (closures.length === 0) return parish ? `No road closures in ${parish} right now.` : "No road closures are currently reported.";
+  if (closures.length === 0) return parish
+    ? `No NWA road closures reported in ${parish}, Jamaica right now.`
+    : "No NWA road closures are currently reported across Jamaica.";
 
   const critical = closures.filter((c) => c.severity === "critical");
   const top = closures.slice(0, 3);
   const prefix = critical.length > 0 ? `${critical.length} critical closure${critical.length !== 1 ? "s" : ""}. ` : "";
-  const details = top.map((c) => `${c.road} in ${c.parish}: ${c.reason}.`).join(" ");
-  return `${prefix}${closures.length} total closure${closures.length !== 1 ? "s" : ""}. ${details}`;
+  const details = top.map((c) => `${c.road} in ${c.parish}, Jamaica: ${c.reason}.`).join(" ");
+  return `${prefix}${closures.length} total NWA closure${closures.length !== 1 ? "s" : ""} in Jamaica. ${details}`;
 }
 
 function buildProjectsResponse(parish: string | null): string {
@@ -144,6 +165,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing query" }, { status: 400 });
   }
 
+  // Road scope check — reject queries about roads not in NWA Jamaica data
+  const roadCheck = detectRoad(query);
+  if (roadCheck === "NOT_FOUND") {
+    const response =
+      "I can only provide information about roads managed by the National Works Agency in Jamaica. That road doesn't appear in our network. Try asking about a specific Jamaican parish or a known NWA road.";
+    return NextResponse.json({ response, intent: "out_of_scope", parish: null });
+  }
+
   const intent = detectIntent(query);
   const parish = detectParish(query);
 
@@ -171,7 +200,8 @@ export async function POST(req: NextRequest) {
       response = buildSummaryResponse();
       break;
     default:
-      response = "I can help with emergencies, road closures, projects, news, complaints, or a parish overview. Try asking about one of those topics.";
+      response =
+        "This assistant only covers Jamaica's NWA road network. You can ask about road closures, emergencies, projects, complaints, news, or a specific Jamaican parish.";
   }
 
   return NextResponse.json({ response, intent, parish });

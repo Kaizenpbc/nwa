@@ -200,7 +200,7 @@ export default function VoicePage() {
         <div className="max-w-2xl mx-auto">
           <h1 className="text-xl font-bold tracking-tight">NWA Voice Assistant</h1>
           <p className="text-blue-200 text-sm mt-0.5">
-            Ask about road closures, emergencies, projects, and more
+            Jamaica road network only &mdash; closures, emergencies, projects &amp; more
           </p>
         </div>
       </div>
@@ -211,6 +211,10 @@ export default function VoicePage() {
           {messages.length === 0 && (
             <div className="text-center py-10">
               <div className="text-5xl mb-4">🇯🇲</div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-medium mb-4">
+                <span>⚠️</span>
+                <span>Covers Jamaica&apos;s NWA road network only</span>
+              </div>
               <p className="text-gray-500 text-sm mb-6">
                 Tap the mic below or try one of these:
               </p>
