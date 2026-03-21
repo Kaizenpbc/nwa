@@ -9,7 +9,22 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
-import { registerTools } from "@/lib/mcp-tools";
+import { registerTools, type UserRole } from "@/lib/mcp-tools";
+
+/**
+ * Staff token — set NWA_STAFF_TOKEN in your environment.
+ * Requests with `Authorization: Bearer <token>` matching this value
+ * receive full access (complaints + SLA data).  All other requests are
+ * treated as public and receive the restricted tool set.
+ */
+const STAFF_TOKEN = process.env.NWA_STAFF_TOKEN ?? "";
+
+function resolveRole(request: Request): UserRole {
+  if (!STAFF_TOKEN) return "public";
+  const auth = request.headers.get("authorization") ?? "";
+  const token = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
+  return token === STAFF_TOKEN ? "staff" : "public";
+}
 
 const CORS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
@@ -56,9 +71,9 @@ function normalizeAccept(req: Request): Request {
   });
 }
 
-function createServer() {
+function createServer(role: UserRole) {
   const s = new McpServer({ name: "nwa-dashboard", version: "1.0.0" });
-  registerTools(s);
+  registerTools(s, role);
   return s;
 }
 
@@ -70,6 +85,7 @@ export async function OPTIONS() {
 
 export async function POST(request: Request) {
   try {
+    const role = resolveRole(request);
     const normalized = normalizeAccept(request);
 
     // Stateless: fresh transport + server per request (serverless-safe)
@@ -78,7 +94,7 @@ export async function POST(request: Request) {
       enableJsonResponse: true,
     });
 
-    const server = createServer();
+    const server = createServer(role);
     await server.connect(transport);
 
     const response = await transport.handleRequest(normalized);

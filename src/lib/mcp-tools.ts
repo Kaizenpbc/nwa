@@ -48,61 +48,66 @@ function buildDashboardKPIs(complaints: Complaint[]) {
   return { total, open, resolved, breached, atRisk, byStatus, byCategory, byParish, byPriority };
 }
 
+export type UserRole = "staff" | "public";
+
 // ── Register tools on a server instance ───────────────────────
 
-export function registerTools(server: McpServer) {
-  server.tool(
-    "get-dashboard-summary",
-    "Get a high-level KPI summary of the NWA complaint dashboard including totals, open/resolved counts, SLA stats, and breakdowns by status, category, parish, and priority.",
-    {},
-    async () => {
-      const kpis = buildDashboardKPIs(COMPLAINTS_INIT);
-      return { content: [{ type: "text", text: JSON.stringify(kpis, null, 2) }] };
-    },
-  );
+export function registerTools(server: McpServer, role: UserRole = "public") {
+  // Staff-only: complaint dashboard KPIs including breached/at-risk SLA counts
+  if (role === "staff") {
+    server.tool(
+      "get-dashboard-summary",
+      "Get a high-level KPI summary of the NWA complaint dashboard including totals, open/resolved counts, SLA stats, and breakdowns by status, category, parish, and priority.",
+      {},
+      async () => {
+        const kpis = buildDashboardKPIs(COMPLAINTS_INIT);
+        return { content: [{ type: "text", text: JSON.stringify(kpis, null, 2) }] };
+      },
+    );
 
-  server.tool(
-    "query-complaints",
-    "Search and filter NWA complaints. Returns matching complaints with SLA status.",
-    {
-      search: z.string().optional().describe("Free-text search across ID, description, parish, category"),
-      status: z.enum(["pending", "under_review", "sent_review", "resolved"]).optional().describe("Filter by complaint status"),
-      priority: z.enum(["high", "standard", "low"]).optional().describe("Filter by priority level"),
-      parish: z.string().optional().describe("Filter by parish name"),
-      category: z.string().optional().describe("Filter by complaint category (Pothole, Road Damage, Flooding, Drainage, Signage, Other)"),
-      sla_status: z.enum(["on_track", "at_risk", "breached", "met", "missed"]).optional().describe("Filter by SLA status"),
-      limit: z.number().optional().default(20).describe("Max results to return (default 20)"),
-    },
-    async ({ search, status, priority, parish, category, sla_status, limit }) => {
-      let results = [...COMPLAINTS_INIT];
+    server.tool(
+      "query-complaints",
+      "Search and filter NWA complaints. Returns matching complaints with SLA status.",
+      {
+        search: z.string().optional().describe("Free-text search across ID, description, parish, category"),
+        status: z.enum(["pending", "under_review", "sent_review", "resolved"]).optional().describe("Filter by complaint status"),
+        priority: z.enum(["high", "standard", "low"]).optional().describe("Filter by priority level"),
+        parish: z.string().optional().describe("Filter by parish name"),
+        category: z.string().optional().describe("Filter by complaint category (Pothole, Road Damage, Flooding, Drainage, Signage, Other)"),
+        sla_status: z.enum(["on_track", "at_risk", "breached", "met", "missed"]).optional().describe("Filter by SLA status"),
+        limit: z.number().optional().default(20).describe("Max results to return (default 20)"),
+      },
+      async ({ search, status, priority, parish, category, sla_status, limit }) => {
+        let results = [...COMPLAINTS_INIT];
 
-      if (search) {
-        const q = search.toLowerCase();
-        results = results.filter(
-          (c) =>
-            c.id.toLowerCase().includes(q) ||
-            c.desc.toLowerCase().includes(q) ||
-            c.parish.toLowerCase().includes(q) ||
-            c.category.toLowerCase().includes(q),
-        );
-      }
-      if (status) results = results.filter((c) => c.status === status);
-      if (priority) results = results.filter((c) => c.priority === priority);
-      if (parish) results = results.filter((c) => c.parish.toLowerCase() === parish.toLowerCase());
-      if (category) results = results.filter((c) => c.category.toLowerCase() === category.toLowerCase());
-      if (sla_status) results = results.filter((c) => getSlaStatus(c) === sla_status);
+        if (search) {
+          const q = search.toLowerCase();
+          results = results.filter(
+            (c) =>
+              c.id.toLowerCase().includes(q) ||
+              c.desc.toLowerCase().includes(q) ||
+              c.parish.toLowerCase().includes(q) ||
+              c.category.toLowerCase().includes(q),
+          );
+        }
+        if (status) results = results.filter((c) => c.status === status);
+        if (priority) results = results.filter((c) => c.priority === priority);
+        if (parish) results = results.filter((c) => c.parish.toLowerCase() === parish.toLowerCase());
+        if (category) results = results.filter((c) => c.category.toLowerCase() === category.toLowerCase());
+        if (sla_status) results = results.filter((c) => getSlaStatus(c) === sla_status);
 
-      const enriched = results.slice(0, limit).map((c) => ({
-        ...c,
-        slaStatus: getSlaStatus(c),
-        slaDaysRemaining: getSlaDaysRemaining(c),
-      }));
+        const enriched = results.slice(0, limit).map((c) => ({
+          ...c,
+          slaStatus: getSlaStatus(c),
+          slaDaysRemaining: getSlaDaysRemaining(c),
+        }));
 
-      return {
-        content: [{ type: "text", text: JSON.stringify({ count: results.length, complaints: enriched }, null, 2) }],
-      };
-    },
-  );
+        return {
+          content: [{ type: "text", text: JSON.stringify({ count: results.length, complaints: enriched }, null, 2) }],
+        };
+      },
+    );
+  }
 
   server.tool(
     "query-projects",
@@ -207,17 +212,14 @@ export function registerTools(server: McpServer) {
 
   server.tool(
     "get-parish-overview",
-    "Get a complete overview for a specific parish — complaints, projects, closures, emergencies, and alert level.",
+    role === "staff"
+      ? "Get a complete overview for a specific parish — complaints, projects, closures, emergencies, and alert level."
+      : "Get a public overview for a specific parish — projects, closures, emergencies, and alert level.",
     {
       parish: z.string().describe("Parish name (e.g. Kingston, St. Andrew, St. Catherine)"),
     },
     async ({ parish }) => {
       const p = parish.toLowerCase();
-      const complaints = COMPLAINTS_INIT.filter((c) => c.parish.toLowerCase() === p).map((c) => ({
-        ...c,
-        slaStatus: getSlaStatus(c),
-        slaDaysRemaining: getSlaDaysRemaining(c),
-      }));
       const projects = PROJECTS.filter((pr) => pr.parish.toLowerCase() === p);
       const closures = CLOSURES.filter((cl) => cl.parish.toLowerCase() === p);
       const emergencies = EMERGENCY_EVENTS.filter((e) =>
@@ -227,24 +229,26 @@ export function registerTools(server: McpServer) {
       const matchedParish = PARISHES.find((name) => name.toLowerCase() === p) || parish;
       const alertLevel = PARISH_ALERT_LEVELS[matchedParish] || "unknown";
 
+      const payload: Record<string, unknown> = {
+        parish: matchedParish,
+        alertLevel,
+        projects: { count: projects.length, items: projects },
+        closures: { count: closures.length, items: closures },
+        emergencies: { count: emergencies.length, items: emergencies },
+      };
+
+      // Complaints and SLA data are restricted to staff
+      if (role === "staff") {
+        const complaints = COMPLAINTS_INIT.filter((c) => c.parish.toLowerCase() === p).map((c) => ({
+          ...c,
+          slaStatus: getSlaStatus(c),
+          slaDaysRemaining: getSlaDaysRemaining(c),
+        }));
+        payload.complaints = { count: complaints.length, items: complaints };
+      }
+
       return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify(
-              {
-                parish: matchedParish,
-                alertLevel,
-                complaints: { count: complaints.length, items: complaints },
-                projects: { count: projects.length, items: projects },
-                closures: { count: closures.length, items: closures },
-                emergencies: { count: emergencies.length, items: emergencies },
-              },
-              null,
-              2,
-            ),
-          },
-        ],
+        content: [{ type: "text", text: JSON.stringify(payload, null, 2) }],
       };
     },
   );
