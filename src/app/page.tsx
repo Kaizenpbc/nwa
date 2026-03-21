@@ -72,13 +72,14 @@ const QUICK_LINKS = [
   { emoji: "\u{1F50D}", label: "Track Request", href: "/complaints/track" },
   { emoji: "\u{1F6A8}", label: "Emergency", href: "/emergency" },
   { emoji: "\u{1F464}", label: "Staff Portal", href: "/portal" },
+  { emoji: "\u{1F3A4}", label: "Voice Assistant", href: "/voice" },
 ];
 
 function QuickLinksGrid() {
   return (
     <section className="py-10 bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
           {QUICK_LINKS.map((link) => (
             <Link
               key={link.label}

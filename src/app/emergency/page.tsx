@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import MapView from "@/components/MapView";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import {
   EMERGENCY_EVENTS,
   CLOSURES,
@@ -117,6 +118,7 @@ export default function EmergencyPage() {
           </div>
         </div>
       </div>
+      <Breadcrumbs crumbs={[{ label: "Emergency Operations" }]} />
 
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
         {/* ── KPI Cards ── */}

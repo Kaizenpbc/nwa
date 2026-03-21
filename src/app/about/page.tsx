@@ -1,19 +1,21 @@
 import Link from "next/link";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-[#1F4E79] text-white py-8">
+      <div className="bg-nwa-blue text-white py-8">
         <div className="max-w-4xl mx-auto px-4">
           <h1 className="text-2xl font-extrabold mb-1">About the National Works Agency</h1>
           <p className="text-blue-200 text-sm">An Executive Agency under the Ministry of Economic Growth &amp; Infrastructure Development.</p>
         </div>
       </div>
+      <Breadcrumbs crumbs={[{ label: "About NWA" }]} />
 
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
         {/* Mandate */}
         <section className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
-          <h2 className="text-[#1F4E79] text-lg font-bold mb-3">Our Mandate</h2>
+          <h2 className="text-nwa-blue text-lg font-bold mb-3">Our Mandate</h2>
           <p className="text-gray-600 leading-relaxed mb-3">
             The National Works Agency (NWA) is the Government of Jamaica&apos;s executive agency responsible for the management, maintenance, and development of the island&apos;s road network. Established under the Executive Agencies Act, the NWA manages over 5,000 kilometres of main roads across Jamaica&apos;s 14 parishes.
           </p>
@@ -30,7 +32,7 @@ export default function AboutPage() {
             { title: "Core Values", text: "Integrity, Professionalism, Accountability, Innovation, and Service Excellence in all our operations across every parish." },
           ].map((v) => (
             <div key={v.title} className="bg-white rounded-xl p-6 shadow-sm border-t-4 border-[#1F4E79]">
-              <h3 className="font-bold text-[#1F4E79] text-base mb-2">{v.title}</h3>
+              <h3 className="font-bold text-nwa-blue text-base mb-2">{v.title}</h3>
               <p className="text-sm text-gray-600 leading-relaxed">{v.text}</p>
             </div>
           ))}
@@ -38,7 +40,7 @@ export default function AboutPage() {
 
         {/* Key Facts */}
         <section className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
-          <h2 className="text-[#1F4E79] text-lg font-bold mb-5">Key Facts</h2>
+          <h2 className="text-nwa-blue text-lg font-bold mb-5">Key Facts</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
               { value: "5,000+", label: "Kilometres of main roads", color: "#1F4E79" },
@@ -55,7 +57,7 @@ export default function AboutPage() {
         </section>
 
         <div className="flex gap-3">
-          <Link href="/projects" className="bg-[#1F4E79] text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-[#2E75B6] transition-colors">View Our Projects &rarr;</Link>
+          <Link href="/projects" className="bg-nwa-blue text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-nwa-blue-light transition-colors">View Our Projects &rarr;</Link>
           <Link href="/contact" className="bg-gray-100 px-5 py-2.5 rounded-lg text-sm hover:bg-gray-200 transition-colors">Contact Us</Link>
         </div>
       </div>

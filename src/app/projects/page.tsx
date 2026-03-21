@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { PROJECTS, PARISHES, STATUS_COLORS, STATUS_LABELS } from "@/data/mock";
 import MapView from "@/components/MapView";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 const statusToMarkerColor: Record<string, "green" | "orange" | "red" | "blue"> = {
   complete: "green",
@@ -39,6 +40,7 @@ export default function ProjectsPage() {
           </p>
         </div>
       </div>
+      <Breadcrumbs crumbs={[{ label: "Road Projects" }]} />
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
