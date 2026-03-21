@@ -64,6 +64,16 @@ export default function VoicePage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [transcript, setTranscript] = useState("");
   const [supported, setSupported] = useState(true);
+  const [staffToken, setStaffToken] = useState("");
+  const [tokenInput, setTokenInput] = useState("");
+  const [showTokenInput, setShowTokenInput] = useState(false);
+
+  // Load token from sessionStorage on mount
+  useEffect(() => {
+    const saved = sessionStorage.getItem("nwa_staff_token") ?? "";
+    setStaffToken(saved);
+    setTokenInput(saved);
+  }, []);
 
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
@@ -125,9 +135,13 @@ export default function VoicePage() {
       setMessages((prev) => [...prev, { role: "user", text }]);
 
       try {
+        const headers: Record<string, string> = { "Content-Type": "application/json" };
+        const token = sessionStorage.getItem("nwa_staff_token");
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+
         const res = await fetch("/api/voice", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers,
           body: JSON.stringify({ query: text }),
         });
         const data = await res.json();
@@ -227,10 +241,60 @@ export default function VoicePage() {
       {/* Header */}
       <div className="bg-nwa-blue text-white px-6 py-5 shadow-md">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-xl font-bold tracking-tight">NWA Voice Assistant</h1>
-          <p className="text-blue-200 text-sm mt-0.5">
-            Jamaica road network only &mdash; closures, emergencies, projects &amp; more
-          </p>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-xl font-bold tracking-tight">NWA Voice Assistant</h1>
+              <p className="text-blue-200 text-sm mt-0.5">
+                Jamaica road network only &mdash; closures, emergencies, projects &amp; more
+              </p>
+            </div>
+            <button
+              onClick={() => setShowTokenInput((v) => !v)}
+              className="shrink-0 text-xs px-3 py-1.5 rounded-full border border-white/30 hover:bg-white/10 transition-colors flex items-center gap-1.5"
+            >
+              {staffToken ? "👤 Staff" : "🔑 Staff login"}
+            </button>
+          </div>
+
+          {showTokenInput && (
+            <div className="mt-4 flex gap-2">
+              <input
+                type="password"
+                value={tokenInput}
+                onChange={(e) => setTokenInput(e.target.value)}
+                placeholder="Enter staff token"
+                className="flex-1 text-sm rounded-lg px-3 py-2 text-gray-900 bg-white border border-white/20 outline-none focus:ring-2 focus:ring-nwa-yellow"
+              />
+              <button
+                onClick={() => {
+                  const t = tokenInput.trim();
+                  sessionStorage.setItem("nwa_staff_token", t);
+                  setStaffToken(t);
+                  setShowTokenInput(false);
+                }}
+                className="text-sm px-4 py-2 rounded-lg bg-nwa-yellow text-nwa-blue font-semibold hover:brightness-105 transition"
+              >
+                Save
+              </button>
+              {staffToken && (
+                <button
+                  onClick={() => {
+                    sessionStorage.removeItem("nwa_staff_token");
+                    setStaffToken("");
+                    setTokenInput("");
+                    setShowTokenInput(false);
+                  }}
+                  className="text-sm px-3 py-2 rounded-lg border border-white/30 hover:bg-white/10 transition text-white"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+          )}
+
+          {staffToken && !showTokenInput && (
+            <p className="text-xs text-nwa-yellow mt-1.5">Staff mode active — full data access enabled</p>
+          )}
         </div>
       </div>
 
