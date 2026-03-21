@@ -38,13 +38,22 @@ declare global {
 
 // ── Suggested prompts ──────────────────────────────────────────────────
 
-const SUGGESTIONS = [
+const PUBLIC_SUGGESTIONS = [
   "What emergencies are active right now?",
   "Any road closures in Kingston?",
-  "Give me the dashboard summary",
   "What projects are in progress?",
-  "Any complaints with breached SLA?",
+  "Any road closures in St. Catherine?",
   "Give me an overview of St. Mary",
+  "Latest NWA news",
+];
+
+const STAFF_SUGGESTIONS = [
+  "Give me the dashboard summary",
+  "Any complaints with breached SLA?",
+  "What emergencies are active right now?",
+  "Any road closures in Kingston?",
+  "Give me an overview of Kingston",
+  "Latest NWA news",
 ];
 
 // ── Status UI config ───────────────────────────────────────────────────
@@ -312,7 +321,7 @@ export default function VoicePage() {
                 Tap the mic below or try one of these:
               </p>
               <div className="flex flex-wrap gap-2 justify-center">
-                {SUGGESTIONS.map((s) => (
+                {(staffToken ? STAFF_SUGGESTIONS : PUBLIC_SUGGESTIONS).map((s) => (
                   <button
                     key={s}
                     onClick={() => query(s)}
