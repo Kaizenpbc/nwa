@@ -185,8 +185,18 @@ export default function VoicePage() {
       setStatus((prev) => (prev === "listening" ? "idle" : prev));
     };
 
-    setStatus("listening");
-    rec.start();
+    // Greet then start listening
+    const greet = new SpeechSynthesisUtterance("How can I help you?");
+    greet.lang = "en-JM";
+    greet.rate = 0.95;
+    greet.pitch = 1.15;
+    if (voiceRef.current) greet.voice = voiceRef.current;
+    greet.onend = () => {
+      setStatus("listening");
+      rec.start();
+    };
+    setStatus("speaking");
+    synthRef.current?.speak(greet);
   }, [status, query]);
 
   // ── Stop speech ─────────────────────────────────────────────────────
