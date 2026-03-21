@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 
 // ── Types ──────────────────────────────────────────────────────────────
 
@@ -74,14 +75,11 @@ export default function VoicePage() {
   const [transcript, setTranscript] = useState("");
   const [supported, setSupported] = useState(true);
   const [staffToken, setStaffToken] = useState("");
-  const [tokenInput, setTokenInput] = useState("");
-  const [showTokenInput, setShowTokenInput] = useState(false);
 
-  // Load token from sessionStorage on mount
+  // Load token from sessionStorage on mount (set by Staff Portal login)
   useEffect(() => {
     const saved = sessionStorage.getItem("nwa_staff_token") ?? "";
     setStaffToken(saved);
-    setTokenInput(saved);
   }, []);
 
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
@@ -257,51 +255,21 @@ export default function VoicePage() {
                 Jamaica road network only &mdash; closures, emergencies, projects &amp; more
               </p>
             </div>
-            <button
-              onClick={() => setShowTokenInput((v) => !v)}
-              className="shrink-0 text-xs px-3 py-1.5 rounded-full border border-white/30 hover:bg-white/10 transition-colors flex items-center gap-1.5"
-            >
-              {staffToken ? "👤 Staff" : "🔑 Staff login"}
-            </button>
+            {staffToken ? (
+              <span className="shrink-0 text-xs px-3 py-1.5 rounded-full bg-nwa-yellow/20 border border-nwa-yellow/40 text-nwa-yellow flex items-center gap-1.5">
+                👤 Staff
+              </span>
+            ) : (
+              <Link
+                href="/portal"
+                className="shrink-0 text-xs px-3 py-1.5 rounded-full border border-white/30 hover:bg-white/10 transition-colors"
+              >
+                Staff Portal →
+              </Link>
+            )}
           </div>
 
-          {showTokenInput && (
-            <div className="mt-4 flex gap-2">
-              <input
-                type="password"
-                value={tokenInput}
-                onChange={(e) => setTokenInput(e.target.value)}
-                placeholder="Enter staff token"
-                className="flex-1 text-sm rounded-lg px-3 py-2 text-gray-900 bg-white border border-white/20 outline-none focus:ring-2 focus:ring-nwa-yellow"
-              />
-              <button
-                onClick={() => {
-                  const t = tokenInput.trim();
-                  sessionStorage.setItem("nwa_staff_token", t);
-                  setStaffToken(t);
-                  setShowTokenInput(false);
-                }}
-                className="text-sm px-4 py-2 rounded-lg bg-nwa-yellow text-nwa-blue font-semibold hover:brightness-105 transition"
-              >
-                Save
-              </button>
-              {staffToken && (
-                <button
-                  onClick={() => {
-                    sessionStorage.removeItem("nwa_staff_token");
-                    setStaffToken("");
-                    setTokenInput("");
-                    setShowTokenInput(false);
-                  }}
-                  className="text-sm px-3 py-2 rounded-lg border border-white/30 hover:bg-white/10 transition text-white"
-                >
-                  Clear
-                </button>
-              )}
-            </div>
-          )}
-
-          {staffToken && !showTokenInput && (
+          {staffToken && (
             <p className="text-xs text-nwa-yellow mt-1.5">Staff mode active — full data access enabled</p>
           )}
         </div>
