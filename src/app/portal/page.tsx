@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -235,6 +235,17 @@ function SlaBadge({ complaint }: { complaint: Complaint }) {
 export default function PortalPage() {
   /* ── Top-level state ── */
   const [activeTab, setActiveTab] = useState<Tab>("dashboard");
+
+  /* ── Staff auth ── */
+  const [staffToken, setStaffToken] = useState("");
+  const [tokenInput, setTokenInput] = useState("");
+  const [showTokenInput, setShowTokenInput] = useState(false);
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem("nwa_staff_token") ?? "";
+    setStaffToken(saved);
+    setTokenInput(saved);
+  }, []);
 
   /* ── Dashboard state ── */
   const [complaints, setComplaints] = useState<Complaint[]>([...COMPLAINTS_INIT]);
@@ -565,13 +576,78 @@ export default function PortalPage() {
             <span className="text-2xl">{"\uD83D\uDD10"}</span> Staff Portal
           </h1>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-blue-200">Logged in as staff</span>
-            <div className="w-8 h-8 bg-nwa-yellow rounded-full flex items-center justify-center">
-              <span className="text-nwa-blue font-bold text-xs">ST</span>
-            </div>
+            {staffToken ? (
+              <>
+                <Link
+                  href="/voice"
+                  className="text-sm px-3 py-1.5 rounded-full bg-nwa-yellow text-nwa-blue font-semibold hover:brightness-105 transition flex items-center gap-1.5"
+                >
+                  🎤 Voice Assistant
+                </Link>
+                <button
+                  onClick={() => setShowTokenInput((v) => !v)}
+                  className="flex items-center gap-2 text-sm text-blue-200 hover:text-white transition"
+                >
+                  <div className="w-8 h-8 bg-nwa-yellow rounded-full flex items-center justify-center">
+                    <span className="text-nwa-blue font-bold text-xs">ST</span>
+                  </div>
+                  <span className="hidden sm:inline">Staff</span>
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => setShowTokenInput((v) => !v)}
+                className="text-sm px-3 py-1.5 rounded-full border border-white/30 hover:bg-white/10 transition"
+              >
+                🔑 Staff login
+              </button>
+            )}
           </div>
         </div>
       </div>
+
+      {/* ── Staff token input panel ── */}
+      {showTokenInput && (
+        <div className="bg-nwa-dark text-white px-6 py-4">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+            <span className="text-sm text-blue-200 shrink-0">Staff token:</span>
+            <input
+              type="password"
+              value={tokenInput}
+              onChange={(e) => setTokenInput(e.target.value)}
+              placeholder="Enter staff token"
+              className="flex-1 text-sm rounded-lg px-3 py-2 text-gray-900 bg-white border border-white/20 outline-none focus:ring-2 focus:ring-nwa-yellow"
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  const t = tokenInput.trim();
+                  sessionStorage.setItem("nwa_staff_token", t);
+                  setStaffToken(t);
+                  setShowTokenInput(false);
+                }}
+                className="text-sm px-4 py-2 rounded-lg bg-nwa-yellow text-nwa-blue font-semibold hover:brightness-105 transition"
+              >
+                Save
+              </button>
+              {staffToken && (
+                <button
+                  onClick={() => {
+                    sessionStorage.removeItem("nwa_staff_token");
+                    setStaffToken("");
+                    setTokenInput("");
+                    setShowTokenInput(false);
+                  }}
+                  className="text-sm px-3 py-2 rounded-lg border border-white/30 hover:bg-white/10 transition"
+                >
+                  Sign out
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <Breadcrumbs crumbs={[{ label: "Staff Portal" }]} />
 
       {/* ── Tab Bar ── */}
