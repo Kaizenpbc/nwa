@@ -269,7 +269,7 @@ export default function VoicePage() {
       </div>
 
       {/* Controls */}
-      <div className="bg-white border-t border-gray-200 px-4 py-6 shadow-lg">
+      <div className="sticky bottom-0 bg-white border-t border-gray-200 px-4 py-6 shadow-lg z-10">
         <div className="max-w-2xl mx-auto flex flex-col items-center gap-3">
           {/* Status label */}
           <p className="text-sm text-gray-500">{cfg.label}</p>
