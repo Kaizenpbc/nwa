@@ -253,26 +253,24 @@ export function registerTools(server: McpServer, role: UserRole = "public") {
 
   server.tool(
     "list-reference-data",
-    "List available parishes, complaint categories, departments, SLA rules, and parish alert levels.",
+    role === "staff"
+      ? "List available parishes, complaint categories, departments, SLA rules, and parish alert levels."
+      : "List available parishes, departments, and parish alert levels.",
     {},
     async () => {
+      const data: Record<string, unknown> = {
+        parishes: PARISHES,
+        departments: DEPARTMENTS,
+        parishAlertLevels: PARISH_ALERT_LEVELS,
+      };
+
+      if (role === "staff") {
+        data.complaintCategories = COMPLAINT_CATEGORIES;
+        data.slaDays = SLA_DAYS;
+      }
+
       return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify(
-              {
-                parishes: PARISHES,
-                complaintCategories: COMPLAINT_CATEGORIES,
-                departments: DEPARTMENTS,
-                slaDays: SLA_DAYS,
-                parishAlertLevels: PARISH_ALERT_LEVELS,
-              },
-              null,
-              2,
-            ),
-          },
-        ],
+        content: [{ type: "text", text: JSON.stringify(data, null, 2) }],
       };
     },
   );
