@@ -65,7 +65,7 @@ export default function Footer() {
 
         <div className="mt-10 pt-6 border-t border-gray-700 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-gray-500">
-            &copy; {new Date().getFullYear()} National Works Agency, Jamaica. All rights reserved.
+            &copy; <span suppressHydrationWarning>{new Date().getFullYear()}</span> National Works Agency, Jamaica. All rights reserved.
           </p>
           <div className="flex gap-4 text-xs text-gray-500">
             <Link href="#" className="hover:text-gray-300">Privacy Policy</Link>
