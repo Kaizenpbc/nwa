@@ -1,25 +1,20 @@
 "use client";
 
-import dynamic from "next/dynamic";
-
-const AccessibilityToolbar = dynamic(
-  () => import("@/components/AccessibilityToolbar"),
-  { ssr: false }
-);
-const WhatsAppButton = dynamic(
-  () => import("@/components/WhatsAppButton"),
-  { ssr: false }
-);
-const PushNotificationBell = dynamic(
-  () => import("@/components/PushNotificationBell"),
-  { ssr: false }
-);
-const PwaInstall = dynamic(
-  () => import("@/components/PwaInstall"),
-  { ssr: false }
-);
+import { useState, useEffect } from "react";
+import AccessibilityToolbar from "@/components/AccessibilityToolbar";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import PushNotificationBell from "@/components/PushNotificationBell";
+import PwaInstall from "@/components/PwaInstall";
 
 export default function ClientOverlays() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
     <>
       <PwaInstall />
