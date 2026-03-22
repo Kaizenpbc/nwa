@@ -207,7 +207,7 @@ export default function AccessibilityToolbar() {
   const activeCount = Object.values(prefs).filter(Boolean).length;
 
   return (
-    <div className="fixed bottom-6 right-6 z-[9998] flex flex-col items-end gap-3">
+    <div className="fixed top-1/2 -translate-y-1/2 right-0 z-[9998] flex flex-row-reverse items-center gap-3">
       {/* Expanded panel */}
       {open && (
         <div
@@ -278,7 +278,7 @@ export default function AccessibilityToolbar() {
         </div>
       )}
 
-      {/* Floating trigger button */}
+      {/* Floating trigger button — right-edge tab style */}
       <button
         ref={triggerRef}
         onClick={() => setOpen((prev) => !prev)}
@@ -289,17 +289,22 @@ export default function AccessibilityToolbar() {
             ? "Close accessibility options"
             : `Accessibility options${activeCount > 0 ? ` (${activeCount} active)` : ""}`
         }
-        className="relative w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-transform duration-150 hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="relative flex flex-col items-center justify-center gap-1 py-3 px-2 shadow-lg transition-transform duration-150 hover:-translate-x-1 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
         style={{
           background: "#003876",
           color: "#ffffff",
           outlineColor: "#f4c430",
+          borderRadius: "8px 0 0 8px",
+          width: "48px",
         }}
       >
-        <A11yIcon size={28} />
+        <A11yIcon size={26} />
+        <span className="text-[9px] font-semibold leading-tight text-center" style={{ color: "#f4c430" }}>
+          A11Y
+        </span>
         {activeCount > 0 && (
           <span
-            className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
+            className="absolute -top-1 -left-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
             style={{ background: "#f4c430", color: "#003876" }}
             aria-hidden="true"
           >
