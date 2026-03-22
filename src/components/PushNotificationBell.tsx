@@ -57,10 +57,22 @@ export default function PushNotificationBell() {
     setShowSelector(true);
   };
 
+  const withTimeout = <T,>(promise: Promise<T>, ms: number, label: string): Promise<T> =>
+    Promise.race([
+      promise,
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error(`${label} timed out — please try again.`)), ms)
+      ),
+    ]);
+
   const handleSubscribe = async () => {
     setLoading(true);
     try {
-      const permission = await Notification.requestPermission();
+      const permission = await withTimeout(
+        Notification.requestPermission(),
+        10000,
+        "Permission request"
+      );
       if (permission === "denied") {
         alert("Notifications are blocked. Please enable them in your browser settings and try again.");
         return;
@@ -70,32 +82,38 @@ export default function PushNotificationBell() {
         return;
       }
 
-      const swReady = await Promise.race([
+      const swReady = await withTimeout(
         navigator.serviceWorker.ready,
-        new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error("Service worker timed out. Please reload the page and try again.")), 8000)
-        ),
-      ]);
+        6000,
+        "Service worker"
+      ) as ServiceWorkerRegistration;
 
-      // Unsubscribe existing subscription first so we get a fresh one
-      const existing = await (swReady as ServiceWorkerRegistration).pushManager.getSubscription();
-      if (existing) await existing.unsubscribe();
+      const existing = await withTimeout(
+        swReady.pushManager.getSubscription(),
+        5000,
+        "Get subscription"
+      );
+      if (existing) {
+        await withTimeout(existing.unsubscribe(), 5000, "Unsubscribe");
+      }
 
       const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
       if (!publicKey) throw new Error("Push key not configured");
 
-      const sub = await Promise.race([
-        (swReady as ServiceWorkerRegistration).pushManager.subscribe({
+      const sub = await withTimeout(
+        swReady.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: urlBase64ToUint8Array(publicKey),
         }),
-        new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error("Push subscription timed out — check browser notification settings")), 8000)
-        ),
-      ]);
+        10000,
+        "Push subscription"
+      );
+
+      // Save preferences locally first so they're not lost if the API call fails
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedParishes));
 
       const ac = new AbortController();
-      const fetchTimer = setTimeout(() => ac.abort(), 8000);
+      const fetchTimer = setTimeout(() => ac.abort(), 6000);
       try {
         await fetch("/api/subscribe", {
           method: "POST",
@@ -103,11 +121,13 @@ export default function PushNotificationBell() {
           body: JSON.stringify({ subscription: sub, parishes: selectedParishes }),
           signal: ac.signal,
         });
+      } catch {
+        // API failure is non-fatal — preferences are saved locally
+        console.warn("Could not register subscription server-side; alerts may not arrive until server is reachable.");
       } finally {
         clearTimeout(fetchTimer);
       }
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedParishes));
       setSubscribed(true);
       setShowSelector(false);
     } catch (err) {
