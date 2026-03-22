@@ -6,7 +6,10 @@ function getKv(): Redis {
   if (!_kv) {
     _kv = new Redis(process.env.REDIS_URL ?? "redis://127.0.0.1:6379", {
       lazyConnect: true,
-      maxRetriesPerRequest: 2,
+      maxRetriesPerRequest: 1,
+      connectTimeout: 3000,
+      enableOfflineQueue: false,
+      retryStrategy: () => null, // don't retry connections
     });
     _kv.on("error", (err) => console.error("[redis]", err.message));
   }
@@ -34,14 +37,22 @@ export async function POST(req: NextRequest) {
   const { subscription, parishes = [] } = await req.json();
   const endpoint = (subscription as PushSubscription).endpoint;
 
-  const stored = await kvGet();
-  const filtered = stored.filter(s => s.subscription.endpoint !== endpoint);
-  filtered.push({ subscription, parishes });
-  await kvSet(filtered);
+  try {
+    const stored = await kvGet();
+    const filtered = stored.filter(s => s.subscription.endpoint !== endpoint);
+    filtered.push({ subscription, parishes });
+    await kvSet(filtered);
+  } catch (err) {
+    console.error("[subscribe] Redis unavailable, subscription not persisted:", err);
+  }
 
   return NextResponse.json({ ok: true });
 }
 
 export async function getSubscriptions(): Promise<StoredSubscription[]> {
-  return kvGet();
+  try {
+    return await kvGet();
+  } catch {
+    return [];
+  }
 }
