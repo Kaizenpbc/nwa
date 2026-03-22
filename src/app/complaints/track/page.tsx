@@ -212,7 +212,7 @@ export default function TrackComplaintPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm mb-6">
                   <div>
                     <span className="text-gray-500 block">Date Reported</span>
-                    <p className="font-medium">
+                    <p className="font-medium" suppressHydrationWarning>
                       {new Date(result.date).toLocaleDateString("en-JM", {
                         month: "long",
                         day: "numeric",

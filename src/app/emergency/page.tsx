@@ -239,7 +239,7 @@ export default function EmergencyPage() {
 
                   {/* Details row */}
                   <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-gray-500">
-                    <span>
+                    <span suppressHydrationWarning>
                       <span className="font-medium text-gray-600">Date:</span>{" "}
                       {new Date(event.date).toLocaleDateString("en-JM", {
                         month: "short",

@@ -892,7 +892,7 @@ export default function PortalPage() {
                           <td className="px-4 py-3 font-mono text-xs font-semibold text-nwa-blue">
                             ...{shortId(c.id)}
                           </td>
-                          <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
+                          <td className="px-4 py-3 text-gray-600 whitespace-nowrap" suppressHydrationWarning>
                             {new Date(c.date).toLocaleDateString("en-JM", {
                               month: "short",
                               day: "numeric",
@@ -965,7 +965,7 @@ export default function PortalPage() {
                       <span className="font-mono text-xs font-semibold text-nwa-blue">
                         {c.id.slice(-8)}
                       </span>
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-gray-400" suppressHydrationWarning>
                         {new Date(c.date).toLocaleDateString("en-JM", {
                           month: "short",
                           day: "numeric",
@@ -1512,7 +1512,7 @@ export default function PortalPage() {
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <div className="bg-gray-50 rounded-lg p-3">
                   <span className="text-xs text-gray-500">Date</span>
-                  <p className="text-sm font-medium text-gray-800">
+                  <p className="text-sm font-medium text-gray-800" suppressHydrationWarning>
                     {new Date(selectedComplaint.date).toLocaleDateString("en-JM", {
                       year: "numeric",
                       month: "short",
