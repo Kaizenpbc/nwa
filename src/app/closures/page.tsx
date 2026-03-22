@@ -231,7 +231,7 @@ export default function ClosuresPage() {
                 )}
 
                 {/* Date range */}
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-500" suppressHydrationWarning>
                   <span className="font-medium text-gray-600">Period: </span>
                   {new Date(closure.start).toLocaleDateString("en-JM", {
                     month: "short",

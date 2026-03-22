@@ -298,7 +298,7 @@ export default function EventsPage() {
                   <span className="font-medium text-gray-500">Parish:</span>
                   {event.parish}
                 </span>
-                <span>
+                <span suppressHydrationWarning>
                   {new Date(event.timestamp).toLocaleTimeString("en-JM", {
                     hour: "2-digit",
                     minute: "2-digit",

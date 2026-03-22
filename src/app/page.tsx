@@ -207,7 +207,7 @@ function LatestNews() {
                     {item.category}
                   </span>
                   <span className="text-xs text-gray-400">{item.parish}</span>
-                  <span className="text-xs text-gray-400 ml-auto">
+                  <span className="text-xs text-gray-400 ml-auto" suppressHydrationWarning>
                     {new Date(item.date).toLocaleDateString("en-JM", {
                       month: "short",
                       day: "numeric",
