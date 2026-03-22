@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AlertBanner from "@/components/AlertBanner";
+import AccessibilityToolbar from "@/components/AccessibilityToolbar";
 
 export const metadata: Metadata = {
   title: "National Works Agency | Government of Jamaica",
@@ -32,6 +33,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <AccessibilityToolbar />
       </body>
     </html>
   );
