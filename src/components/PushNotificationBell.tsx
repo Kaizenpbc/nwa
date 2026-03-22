@@ -16,29 +16,25 @@ function urlBase64ToUint8Array(base64String: string): ArrayBuffer {
 export default function PushNotificationBell() {
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [supported, setSupported] = useState(true);
+  const [supported, setSupported] = useState(false);
 
   useEffect(() => {
     if (
-      typeof window === "undefined" ||
-      !("Notification" in window) ||
-      !("serviceWorker" in navigator) ||
-      !("PushManager" in window)
+      typeof window !== "undefined" &&
+      "Notification" in window &&
+      "serviceWorker" in navigator &&
+      "PushManager" in window
     ) {
-      setSupported(false);
-      return;
+      setSupported(true);
+      // Check if already subscribed
+      navigator.serviceWorker.ready
+        .then((reg) => reg.pushManager.getSubscription())
+        .then((sub) => {
+          if (sub) setSubscribed(true);
+        })
+        .catch(() => {});
     }
-
-    // Check if already subscribed
-    navigator.serviceWorker.ready
-      .then((reg) => reg.pushManager.getSubscription())
-      .then((sub) => {
-        if (sub) setSubscribed(true);
-      })
-      .catch(() => {});
   }, []);
-
-  if (!supported) return null;
 
   const handleSubscribe = async () => {
     setLoading(true);
@@ -77,6 +73,21 @@ export default function PushNotificationBell() {
         <div className="flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium bg-green-600 text-white shadow-lg">
           🔔 Alerts On ✓
         </div>
+      </div>
+    );
+  }
+
+  // Fallback for unsupported browsers: link to closures page
+  if (!supported) {
+    return (
+      <div className="fixed bottom-20 left-6 z-[9997]">
+        <a
+          href="/closures"
+          style={{ backgroundColor: "#003876" }}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium text-white shadow-lg hover:opacity-90 transition-opacity"
+        >
+          🔔 Get Road Alerts
+        </a>
       </div>
     );
   }
