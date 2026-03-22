@@ -1,7 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import Redis from "ioredis";
 
-const kv = new Redis(process.env.REDIS_URL!);
+let _kv: Redis | null = null;
+function getKv(): Redis {
+  if (!_kv) {
+    _kv = new Redis(process.env.REDIS_URL ?? "redis://127.0.0.1:6379", {
+      lazyConnect: true,
+      maxRetriesPerRequest: 2,
+    });
+    _kv.on("error", (err) => console.error("[redis]", err.message));
+  }
+  return _kv;
+}
 
 export interface StoredSubscription {
   subscription: PushSubscription;
@@ -11,13 +21,13 @@ export interface StoredSubscription {
 const KV_KEY = "push_subscriptions";
 
 async function kvGet(): Promise<StoredSubscription[]> {
-  const raw = await kv.get(KV_KEY);
+  const raw = await getKv().get(KV_KEY);
   if (!raw) return [];
   return JSON.parse(raw) as StoredSubscription[];
 }
 
 async function kvSet(data: StoredSubscription[]): Promise<void> {
-  await kv.set(KV_KEY, JSON.stringify(data));
+  await getKv().set(KV_KEY, JSON.stringify(data));
 }
 
 export async function POST(req: NextRequest) {
