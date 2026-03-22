@@ -1,5 +1,5 @@
 const CACHE = 'nwa-v1';
-const PRECACHE = ['/', '/closures', '/complaints', '/projects', '/news', '/emergency', '/manifest.json'];
+const PRECACHE = ['/manifest.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(PRECACHE)).then(() => self.skipWaiting()));

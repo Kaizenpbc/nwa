@@ -73,7 +73,7 @@ export default function PushNotificationBell() {
       const swReady = await Promise.race([
         navigator.serviceWorker.ready,
         new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error("Service worker timed out")), 8000)
+          setTimeout(() => reject(new Error("Service worker timed out")), 20000)
         ),
       ]);
 
@@ -84,10 +84,15 @@ export default function PushNotificationBell() {
       const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
       if (!publicKey) throw new Error("Push key not configured");
 
-      const sub = await (swReady as ServiceWorkerRegistration).pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicKey),
-      });
+      const sub = await Promise.race([
+        (swReady as ServiceWorkerRegistration).pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(publicKey),
+        }),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("Push subscription timed out — check browser notification settings")), 15000)
+        ),
+      ]);
 
       await fetch("/api/subscribe", {
         method: "POST",
