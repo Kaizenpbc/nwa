@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 type ToggleKey =
   | "highContrast"
   | "largerText"
@@ -18,135 +16,36 @@ interface ToggleConfig {
   htmlClass: string;
 }
 
-// ─── Config ───────────────────────────────────────────────────────────────────
-
 const TOGGLES: ToggleConfig[] = [
-  {
-    key: "highContrast",
-    label: "High Contrast",
-    description: "Dark background with high-contrast text",
-    htmlClass: "a11y-contrast",
-  },
-  {
-    key: "largerText",
-    label: "Larger Text",
-    description: "Increase font size by 20%",
-    htmlClass: "a11y-large-text",
-  },
-  {
-    key: "pauseAnimations",
-    label: "Pause Animations",
-    description: "Stop all motion and transitions",
-    htmlClass: "a11y-pause-animations",
-  },
-  {
-    key: "highlightLinks",
-    label: "Highlight Links",
-    description: "Outline and underline all links",
-    htmlClass: "a11y-highlight-links",
-  },
-  {
-    key: "grayscale",
-    label: "Grayscale",
-    description: "Remove all colour from the page",
-    htmlClass: "a11y-grayscale",
-  },
+  { key: "highContrast", label: "High Contrast", description: "Dark background with high-contrast text", htmlClass: "a11y-contrast" },
+  { key: "largerText", label: "Larger Text", description: "Increase font size by 20%", htmlClass: "a11y-large-text" },
+  { key: "pauseAnimations", label: "Pause Animations", description: "Stop all motion and transitions", htmlClass: "a11y-pause-animations" },
+  { key: "highlightLinks", label: "Highlight Links", description: "Outline and underline all links", htmlClass: "a11y-highlight-links" },
+  { key: "grayscale", label: "Grayscale", description: "Remove all colour from the page", htmlClass: "a11y-grayscale" },
 ];
 
 const STORAGE_KEY = "nwa-a11y-prefs";
-
 type PrefsState = Record<ToggleKey, boolean>;
-
 const DEFAULT_PREFS: PrefsState = {
-  highContrast: false,
-  largerText: false,
-  pauseAnimations: false,
-  highlightLinks: false,
-  grayscale: false,
+  highContrast: false, largerText: false, pauseAnimations: false, highlightLinks: false, grayscale: false,
 };
-
-// ─── Persistence helpers ──────────────────────────────────────────────────────
 
 function loadPrefs(): PrefsState {
   if (typeof window === "undefined") return DEFAULT_PREFS;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULT_PREFS;
-    return { ...DEFAULT_PREFS, ...JSON.parse(raw) };
-  } catch {
-    return DEFAULT_PREFS;
-  }
+    return raw ? { ...DEFAULT_PREFS, ...JSON.parse(raw) } : DEFAULT_PREFS;
+  } catch { return DEFAULT_PREFS; }
 }
 
 function savePrefs(prefs: PrefsState) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
-  } catch {
-    // ignore quota errors
-  }
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs)); } catch {}
 }
-
-// ─── Apply / remove HTML classes ─────────────────────────────────────────────
 
 function syncHtmlClasses(prefs: PrefsState) {
   const root = document.documentElement;
-  TOGGLES.forEach(({ key, htmlClass }) => {
-    root.classList.toggle(htmlClass, prefs[key]);
-  });
+  TOGGLES.forEach(({ key, htmlClass }) => root.classList.toggle(htmlClass, prefs[key]));
 }
-
-// ─── Accessibility person icon (universal symbol) ─────────────────────────────
-
-function A11yIcon({ size = 24, className = "" }: { size?: number; className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      width={size}
-      height={size}
-      fill="currentColor"
-      aria-hidden="true"
-      className={className}
-    >
-      <circle cx="12" cy="3.5" r="2" />
-      <path d="M17 7.5H7a1 1 0 000 2h3.5v2.3l-2.8 5.6a1 1 0 001.8.9L11.9 14h.2l2.4 4.3a1 1 0 001.8-.9l-2.8-5.6V9.5H17a1 1 0 000-2z" />
-    </svg>
-  );
-}
-
-// ─── Pill toggle switch ───────────────────────────────────────────────────────
-
-function PillToggle({
-  id,
-  checked,
-  onChange,
-}: {
-  id: string;
-  checked: boolean;
-  onChange: (v: boolean) => void;
-}) {
-  return (
-    <button
-      role="switch"
-      id={id}
-      aria-checked={checked}
-      onClick={() => onChange(!checked)}
-      className="relative shrink-0 w-11 h-6 rounded-full transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-      style={{
-        backgroundColor: checked ? "#f4c430" : "#d1d5db",
-        outlineColor: "#f4c430",
-      }}
-    >
-      <span
-        className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200"
-        style={{ transform: checked ? "translateX(20px)" : "translateX(0)" }}
-      />
-      <span className="sr-only">{checked ? "On" : "Off"}</span>
-    </button>
-  );
-}
-
-// ─── Main component ───────────────────────────────────────────────────────────
 
 export default function AccessibilityToolbar() {
   const [prefs, setPrefs] = useState<PrefsState>(DEFAULT_PREFS);
@@ -154,35 +53,23 @@ export default function AccessibilityToolbar() {
   const panelRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
-  // Hydrate from localStorage and apply classes on mount
   useEffect(() => {
     const stored = loadPrefs();
     setPrefs(stored);
     syncHtmlClasses(stored);
   }, []);
 
-  // Close on outside click or Escape
   useEffect(() => {
     if (!open) return;
-
-    function handleKey(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        setOpen(false);
-        triggerRef.current?.focus();
-      }
-    }
-
-    function handleClick(e: MouseEvent) {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { setOpen(false); triggerRef.current?.focus(); }
+    };
+    const handleClick = (e: MouseEvent) => {
       if (
-        panelRef.current &&
-        !panelRef.current.contains(e.target as Node) &&
-        triggerRef.current &&
-        !triggerRef.current.contains(e.target as Node)
-      ) {
-        setOpen(false);
-      }
-    }
-
+        panelRef.current && !panelRef.current.contains(e.target as Node) &&
+        triggerRef.current && !triggerRef.current.contains(e.target as Node)
+      ) setOpen(false);
+    };
     document.addEventListener("keydown", handleKey);
     document.addEventListener("mousedown", handleClick);
     return () => {
@@ -193,133 +80,159 @@ export default function AccessibilityToolbar() {
 
   function handleToggle(key: ToggleKey, value: boolean) {
     const next = { ...prefs, [key]: value };
-    setPrefs(next);
-    savePrefs(next);
-    syncHtmlClasses(next);
+    setPrefs(next); savePrefs(next); syncHtmlClasses(next);
   }
 
   function handleReset() {
-    setPrefs(DEFAULT_PREFS);
-    savePrefs(DEFAULT_PREFS);
-    syncHtmlClasses(DEFAULT_PREFS);
+    setPrefs(DEFAULT_PREFS); savePrefs(DEFAULT_PREFS); syncHtmlClasses(DEFAULT_PREFS);
   }
 
   const activeCount = Object.values(prefs).filter(Boolean).length;
 
   return (
-    <div style={{ position: "fixed", top: "50%", transform: "translateY(-50%)", right: 0, zIndex: 9998, display: "flex", flexDirection: "row-reverse", alignItems: "center", gap: "12px" }}>
-      {/* Expanded panel */}
+    <>
+      {/* Panel */}
       {open && (
         <div
           ref={panelRef}
           role="dialog"
-          aria-modal="false"
           aria-label="Accessibility options"
-          className="w-72 rounded-2xl shadow-2xl overflow-hidden"
-          style={{ background: "#ffffff", border: "2px solid #003876" }}
+          style={{
+            position: "fixed",
+            top: "50%",
+            right: "52px",
+            transform: "translateY(-50%)",
+            zIndex: 9999,
+            width: "280px",
+            background: "#ffffff",
+            border: "2px solid #003876",
+            borderRadius: "12px",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+            overflow: "hidden",
+          }}
         >
           {/* Header */}
-          <div
-            className="px-4 py-3 flex items-center justify-between"
-            style={{ background: "#003876" }}
-          >
-            <div className="flex items-center gap-2">
-              <A11yIcon size={20} className="text-yellow-400" />
-              <span className="text-white font-semibold text-sm tracking-wide">
-                Accessibility
-              </span>
-            </div>
+          <div style={{ background: "#003876", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ color: "#ffffff", fontWeight: 600, fontSize: "14px" }}>Accessibility Options</span>
             {activeCount > 0 && (
               <button
                 onClick={handleReset}
-                className="text-xs text-blue-200 hover:text-white underline transition-colors"
-                aria-label="Reset all accessibility options"
+                style={{ background: "none", border: "none", color: "#f4c430", fontSize: "12px", cursor: "pointer", textDecoration: "underline" }}
+                aria-label="Reset all"
               >
                 Reset all
               </button>
             )}
           </div>
 
-          {/* Toggle list */}
-          <ul className="divide-y divide-gray-100">
-            {TOGGLES.map((toggle) => (
-              <li key={toggle.key}>
-                <label
-                  className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
-                  htmlFor={`a11y-${toggle.key}`}
-                >
-                  <div className="flex-1 min-w-0">
-                    <span className="text-sm font-medium text-gray-900 block">
-                      {toggle.label}
-                    </span>
-                    <span className="text-xs text-gray-500 block mt-0.5 leading-tight">
-                      {toggle.description}
-                    </span>
-                  </div>
-                  <PillToggle
-                    id={`a11y-${toggle.key}`}
-                    checked={prefs[toggle.key]}
-                    onChange={(v) => handleToggle(toggle.key, v)}
-                  />
-                </label>
-              </li>
-            ))}
-          </ul>
+          {/* Toggles */}
+          {TOGGLES.map((toggle) => (
+            <div
+              key={toggle.key}
+              style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderBottom: "1px solid #f0f0f0" }}
+            >
+              <div>
+                <div style={{ fontSize: "14px", fontWeight: 500, color: "#1a1a2e" }}>{toggle.label}</div>
+                <div style={{ fontSize: "11px", color: "#666", marginTop: "2px" }}>{toggle.description}</div>
+              </div>
+              <button
+                role="switch"
+                aria-checked={prefs[toggle.key]}
+                onClick={() => handleToggle(toggle.key, !prefs[toggle.key])}
+                style={{
+                  position: "relative",
+                  width: "44px",
+                  height: "24px",
+                  borderRadius: "12px",
+                  border: "none",
+                  cursor: "pointer",
+                  background: prefs[toggle.key] ? "#f4c430" : "#ccc",
+                  flexShrink: 0,
+                  marginLeft: "12px",
+                }}
+              >
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "2px",
+                    left: prefs[toggle.key] ? "22px" : "2px",
+                    width: "20px",
+                    height: "20px",
+                    borderRadius: "50%",
+                    background: "#fff",
+                    transition: "left 0.2s",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
+                  }}
+                />
+              </button>
+            </div>
+          ))}
 
           {/* Footer */}
-          <div
-            className="px-4 py-2 text-center"
-            style={{ background: "#f7f8fa", borderTop: "1px solid #e5e7eb" }}
-          >
-            <span className="text-[10px] text-gray-400 tracking-wide uppercase">
-              NWA Accessibility Widget
-            </span>
+          <div style={{ background: "#f7f8fa", padding: "8px 16px", textAlign: "center" }}>
+            <span style={{ fontSize: "10px", color: "#999", textTransform: "uppercase", letterSpacing: "0.05em" }}>NWA Accessibility</span>
           </div>
         </div>
       )}
 
-      {/* Floating trigger button — right-edge tab style */}
+      {/* Trigger tab — fixed to middle-right edge */}
       <button
         ref={triggerRef}
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="dialog"
-        aria-label={
-          open
-            ? "Close accessibility options"
-            : `Accessibility options${activeCount > 0 ? ` (${activeCount} active)` : ""}`
-        }
+        aria-label={open ? "Close accessibility options" : "Open accessibility options"}
         style={{
-          position: "relative",
+          position: "fixed",
+          top: "50%",
+          right: 0,
+          transform: "translateY(-50%)",
+          zIndex: 9999,
+          width: "44px",
+          padding: "14px 8px",
+          background: "#003876",
+          color: "#ffffff",
+          border: "none",
+          borderRadius: "8px 0 0 8px",
+          cursor: "pointer",
+          boxShadow: "-2px 2px 10px rgba(0,0,0,0.35)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
-          gap: "4px",
-          padding: "12px 8px",
-          background: "#003876",
-          color: "#ffffff",
-          borderRadius: "8px 0 0 8px",
-          width: "48px",
-          border: "none",
-          cursor: "pointer",
-          boxShadow: "-2px 2px 8px rgba(0,0,0,0.3)",
+          gap: "6px",
         }}
       >
-        <A11yIcon size={26} />
-        <span className="text-[9px] font-semibold leading-tight text-center" style={{ color: "#f4c430" }}>
+        {/* Accessibility person icon */}
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="#ffffff" aria-hidden="true">
+          <circle cx="12" cy="3.5" r="2" />
+          <path d="M17 7.5H7a1 1 0 000 2h3.5v2.3l-2.8 5.6a1 1 0 001.8.9L11.9 14h.2l2.4 4.3a1 1 0 001.8-.9l-2.8-5.6V9.5H17a1 1 0 000-2z" />
+        </svg>
+        <span style={{ fontSize: "8px", fontWeight: 700, color: "#f4c430", letterSpacing: "0.05em", writingMode: "vertical-rl", textOrientation: "mixed" }}>
           A11Y
         </span>
         {activeCount > 0 && (
           <span
-            className="absolute -top-1 -left-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
-            style={{ background: "#f4c430", color: "#003876" }}
+            style={{
+              position: "absolute",
+              top: "-6px",
+              left: "-6px",
+              width: "18px",
+              height: "18px",
+              borderRadius: "50%",
+              background: "#f4c430",
+              color: "#003876",
+              fontSize: "10px",
+              fontWeight: 700,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
             aria-hidden="true"
           >
             {activeCount}
           </span>
         )}
       </button>
-    </div>
+    </>
   );
 }
