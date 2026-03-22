@@ -1,21 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
+import { kv } from "@vercel/kv";
 
 export interface StoredSubscription {
   subscription: PushSubscription;
   parishes: string[]; // empty array means "all parishes"
 }
 
-// In-memory store for demo (resets on server restart)
-const subscriptions: StoredSubscription[] = [];
+const KV_KEY = "push_subscriptions";
 
 export async function POST(req: NextRequest) {
   const { subscription, parishes = [] } = await req.json();
-  // Remove any existing subscription with the same endpoint
   const endpoint = (subscription as PushSubscription).endpoint;
-  const idx = subscriptions.findIndex(s => s.subscription.endpoint === endpoint);
-  if (idx !== -1) subscriptions.splice(idx, 1);
-  subscriptions.push({ subscription, parishes });
+
+  const stored: StoredSubscription[] = (await kv.get<StoredSubscription[]>(KV_KEY)) ?? [];
+  const filtered = stored.filter(s => s.subscription.endpoint !== endpoint);
+  filtered.push({ subscription, parishes });
+  await kv.set(KV_KEY, filtered);
+
   return NextResponse.json({ ok: true });
 }
 
-export function getSubscriptions() { return subscriptions; }
+export async function getSubscriptions(): Promise<StoredSubscription[]> {
+  return (await kv.get<StoredSubscription[]>(KV_KEY)) ?? [];
+}

@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     process.env.VAPID_PRIVATE_KEY!,
   );
   const { title, body, url, parish } = await req.json();
-  const all = getSubscriptions();
+  const all = await getSubscriptions();
 
   // Filter: if parish specified, include subscribers for that parish or "all parishes" (empty array)
   const targets = parish
