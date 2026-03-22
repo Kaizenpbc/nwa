@@ -20,7 +20,7 @@ function VideoHero() {
       <div className="absolute inset-0 pointer-events-none">
         <iframe
           className="absolute top-1/2 left-1/2 w-[180%] h-[180%] -translate-x-1/2 -translate-y-1/2"
-          src="https://www.youtube.com/embed/HNftNo8Ewuc?autoplay=1&mute=1&loop=1&playlist=HNftNo8Ewuc&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1"
+          src="https://www.youtube-nocookie.com/embed/HNftNo8Ewuc?autoplay=1&mute=1&loop=1&playlist=HNftNo8Ewuc&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1"
           title="NWA Jamaica background video"
           allow="autoplay; encrypted-media"
           allowFullScreen
