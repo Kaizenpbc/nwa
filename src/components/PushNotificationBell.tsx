@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { PARISHES } from "@/data/mock";
 
 function urlBase64ToUint8Array(base64String: string): ArrayBuffer {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -17,6 +18,8 @@ export default function PushNotificationBell() {
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [supported, setSupported] = useState(false);
+  const [showSelector, setShowSelector] = useState(false);
+  const [selectedParishes, setSelectedParishes] = useState<string[]>([]);
 
   useEffect(() => {
     if (
@@ -26,7 +29,6 @@ export default function PushNotificationBell() {
       "PushManager" in window
     ) {
       setSupported(true);
-      // Check if already subscribed
       navigator.serviceWorker.ready
         .then((reg) => reg.pushManager.getSubscription())
         .then((sub) => {
@@ -35,6 +37,12 @@ export default function PushNotificationBell() {
         .catch(() => {});
     }
   }, []);
+
+  const toggleParish = (parish: string) => {
+    setSelectedParishes(prev =>
+      prev.includes(parish) ? prev.filter(p => p !== parish) : [...prev, parish]
+    );
+  };
 
   const handleSubscribe = async () => {
     setLoading(true);
@@ -49,7 +57,6 @@ export default function PushNotificationBell() {
         return;
       }
 
-      // Wait for service worker with a timeout
       const swReady = await Promise.race([
         navigator.serviceWorker.ready,
         new Promise<never>((_, reject) =>
@@ -68,10 +75,11 @@ export default function PushNotificationBell() {
       await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(sub),
+        body: JSON.stringify({ subscription: sub, parishes: selectedParishes }),
       });
 
       setSubscribed(true);
+      setShowSelector(false);
     } catch (err) {
       console.error("Push subscription failed:", err);
       const msg = err instanceof Error ? err.message : "Unknown error";
@@ -91,7 +99,6 @@ export default function PushNotificationBell() {
     );
   }
 
-  // Fallback for unsupported browsers: link to closures page
   if (!supported) {
     return (
       <div className="fixed bottom-20 left-6 z-[9997]">
@@ -108,13 +115,39 @@ export default function PushNotificationBell() {
 
   return (
     <div className="fixed bottom-20 left-6 z-[9997]">
+      {showSelector && (
+        <div className="mb-2 bg-white border border-gray-200 rounded-xl shadow-xl p-4 w-64">
+          <p className="text-sm font-semibold text-gray-800 mb-1">Select parishes to watch</p>
+          <p className="text-xs text-gray-500 mb-3">Leave all unchecked to receive alerts for every parish.</p>
+          <div className="max-h-48 overflow-y-auto space-y-1">
+            {PARISHES.map(parish => (
+              <label key={parish} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-50 px-1 py-0.5 rounded">
+                <input
+                  type="checkbox"
+                  checked={selectedParishes.includes(parish)}
+                  onChange={() => toggleParish(parish)}
+                  className="accent-blue-700"
+                />
+                {parish}
+              </label>
+            ))}
+          </div>
+          <button
+            onClick={handleSubscribe}
+            disabled={loading}
+            style={{ backgroundColor: "#003876" }}
+            className="mt-3 w-full py-1.5 rounded-lg text-sm font-medium text-white disabled:opacity-60 hover:opacity-90 transition-opacity"
+          >
+            {loading ? "Setting up…" : "Confirm & Subscribe"}
+          </button>
+        </div>
+      )}
       <button
-        onClick={handleSubscribe}
-        disabled={loading}
+        onClick={() => setShowSelector(v => !v)}
         style={{ backgroundColor: "#003876" }}
-        className="flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium text-white shadow-lg disabled:opacity-60 hover:opacity-90 transition-opacity"
+        className="flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium text-white shadow-lg hover:opacity-90 transition-opacity"
       >
-        🔔 {loading ? "Setting up…" : "Get Road Alerts"}
+        🔔 Get Road Alerts
       </button>
     </div>
   );
