@@ -125,7 +125,7 @@ export default function PushNotificationBell() {
       ? selectedParishes[0]
       : `${selectedParishes.length} parishes`;
 
-  const ParishSelector = () => (
+  const parishSelectorJsx = showSelector ? (
     <div className="mb-2 bg-white border border-gray-200 rounded-xl shadow-xl p-4 w-64">
       <p className="text-sm font-semibold text-gray-800 mb-1">Select parishes to watch</p>
       <p className="text-xs text-gray-500 mb-3">Leave all unchecked to receive alerts for every parish.</p>
@@ -157,12 +157,12 @@ export default function PushNotificationBell() {
         Cancel
       </button>
     </div>
-  );
+  ) : null;
 
   if (subscribed) {
     return (
       <div className="fixed bottom-20 left-6 z-[9997]">
-        {showSelector && <ParishSelector />}
+        {parishSelectorJsx}
         <div className="flex items-center gap-1 rounded-full shadow-lg overflow-hidden text-sm font-medium">
           <div className="flex items-center gap-1.5 pl-3 pr-2 py-2 bg-green-600 text-white">
             🔔 Alerts On ✓
@@ -195,7 +195,7 @@ export default function PushNotificationBell() {
 
   return (
     <div className="fixed bottom-20 left-6 z-[9997]">
-      {showSelector && <ParishSelector />}
+      {parishSelectorJsx}
       <button
         onClick={() => setShowSelector(v => !v)}
         style={{ backgroundColor: "#003876" }}
