@@ -1225,7 +1225,7 @@ export default function PortalPage() {
                     </span>
                   </div>
                   <div className="mt-3 text-xs text-gray-500">
-                    Submitted by: editor@nwa.gov.jm | {new Date().toLocaleDateString("en-JM")}
+                    Submitted by: editor@nwa.gov.jm | <span suppressHydrationWarning>{new Date().toLocaleDateString("en-JM")}</span>
                   </div>
                 </div>
               </div>
@@ -1289,7 +1289,7 @@ export default function PortalPage() {
                   </div>
                   <div className="mt-3 text-xs text-gray-500">
                     Approved by: approver@nwa.gov.jm |{" "}
-                    {new Date().toLocaleDateString("en-JM")}
+                    <span suppressHydrationWarning>{new Date().toLocaleDateString("en-JM")}</span>
                   </div>
                 </div>
               </div>
@@ -1682,7 +1682,7 @@ export default function PortalPage() {
                         <div className="flex items-center gap-2 text-xs text-yellow-700 mb-1">
                           <span className="font-semibold">Staff</span>
                           <span>{"\u2022"}</span>
-                          <span>{new Date().toLocaleDateString("en-JM")}</span>
+                          <span suppressHydrationWarning>{new Date().toLocaleDateString("en-JM")}</span>
                         </div>
                         {note}
                       </div>

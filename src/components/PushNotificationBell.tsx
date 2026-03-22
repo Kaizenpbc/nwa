@@ -73,7 +73,7 @@ export default function PushNotificationBell() {
       const swReady = await Promise.race([
         navigator.serviceWorker.ready,
         new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error("Service worker timed out")), 20000)
+          setTimeout(() => reject(new Error("Service worker timed out. Please reload the page and try again.")), 8000)
         ),
       ]);
 
@@ -90,15 +90,22 @@ export default function PushNotificationBell() {
           applicationServerKey: urlBase64ToUint8Array(publicKey),
         }),
         new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error("Push subscription timed out — check browser notification settings")), 15000)
+          setTimeout(() => reject(new Error("Push subscription timed out — check browser notification settings")), 8000)
         ),
       ]);
 
-      await fetch("/api/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subscription: sub, parishes: selectedParishes }),
-      });
+      const ac = new AbortController();
+      const fetchTimer = setTimeout(() => ac.abort(), 8000);
+      try {
+        await fetch("/api/subscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ subscription: sub, parishes: selectedParishes }),
+          signal: ac.signal,
+        });
+      } finally {
+        clearTimeout(fetchTimer);
+      }
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedParishes));
       setSubscribed(true);
