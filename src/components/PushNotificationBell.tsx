@@ -68,11 +68,11 @@ export default function PushNotificationBell() {
   const handleSubscribe = async () => {
     setLoading(true);
     try {
-      const permission = await withTimeout(
-        Notification.requestPermission(),
-        10000,
-        "Permission request"
-      );
+      // Check existing permission first — avoids prompting unnecessarily
+      let permission = Notification.permission;
+      if (permission === "default") {
+        permission = await Notification.requestPermission();
+      }
       if (permission === "denied") {
         alert("Notifications are blocked. Please enable them in your browser settings and try again.");
         return;
