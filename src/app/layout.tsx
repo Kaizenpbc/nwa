@@ -4,6 +4,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AlertBanner from "@/components/AlertBanner";
 import AccessibilityToolbar from "@/components/AccessibilityToolbar";
+import PwaInstall from "@/components/PwaInstall";
+import PushNotificationBell from "@/components/PushNotificationBell";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 export const metadata: Metadata = {
   title: "National Works Agency | Government of Jamaica",
@@ -27,6 +30,7 @@ export default function RootLayout({
         <a href="#main-content" className="skip-to-content">
           Skip to main content
         </a>
+        <PwaInstall />
         <AlertBanner />
         <Header />
         <main id="main-content" className="flex-1">
@@ -34,6 +38,8 @@ export default function RootLayout({
         </main>
         <Footer />
         <AccessibilityToolbar />
+        <WhatsAppButton />
+        <PushNotificationBell />
       </body>
     </html>
   );
