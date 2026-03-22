@@ -207,7 +207,7 @@ export default function AccessibilityToolbar() {
   const activeCount = Object.values(prefs).filter(Boolean).length;
 
   return (
-    <div className="fixed top-1/2 -translate-y-1/2 right-0 z-[9998] flex flex-row-reverse items-center gap-3">
+    <div style={{ position: "fixed", top: "50%", transform: "translateY(-50%)", right: 0, zIndex: 9998, display: "flex", flexDirection: "row-reverse", alignItems: "center", gap: "12px" }}>
       {/* Expanded panel */}
       {open && (
         <div
@@ -289,13 +289,21 @@ export default function AccessibilityToolbar() {
             ? "Close accessibility options"
             : `Accessibility options${activeCount > 0 ? ` (${activeCount} active)` : ""}`
         }
-        className="relative flex flex-col items-center justify-center gap-1 py-3 px-2 shadow-lg transition-transform duration-150 hover:-translate-x-1 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
         style={{
+          position: "relative",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "4px",
+          padding: "12px 8px",
           background: "#003876",
           color: "#ffffff",
-          outlineColor: "#f4c430",
           borderRadius: "8px 0 0 8px",
           width: "48px",
+          border: "none",
+          cursor: "pointer",
+          boxShadow: "-2px 2px 8px rgba(0,0,0,0.3)",
         }}
       >
         <A11yIcon size={26} />
