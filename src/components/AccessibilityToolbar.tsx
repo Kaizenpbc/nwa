@@ -224,7 +224,7 @@ export default function AccessibilityToolbar() {
             style={{ background: "#003876" }}
           >
             <div className="flex items-center gap-2">
-              <A11yIcon size={20} className="text-white" style={{ color: "#f4c430" }} />
+              <A11yIcon size={20} className="text-yellow-400" />
               <span className="text-white font-semibold text-sm tracking-wide">
                 Accessibility
               </span>
