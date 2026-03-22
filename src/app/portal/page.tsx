@@ -541,25 +541,35 @@ export default function PortalPage() {
     }
   }
 
-  function handlePublishAndPush() {
+  async function handlePublishAndPush() {
     setCmsPushToHomepage(true);
-    // Add a new closure to local state
-    setClosures((prev) => [
-      ...prev,
-      {
-        id: prev.length + 1,
-        road: "Old Hope Road (near Papine)",
-        parish: "St. Andrew",
-        start: "2026-03-05",
-        end: "2026-03-12",
-        reason: "Emergency sinkhole repair",
-        detour: "Use Gordon Town Road as alternate route",
-        severity: "critical",
-        push: true,
-        lat: 18.02,
-        lng: -76.745,
-      },
-    ]);
+    const newClosure = {
+      id: closures.length + 1,
+      road: "Old Hope Road (near Papine)",
+      parish: "St. Andrew",
+      start: "2026-03-05",
+      end: "2026-03-12",
+      reason: "Emergency sinkhole repair",
+      detour: "Use Gordon Town Road as alternate route",
+      severity: "critical",
+      push: true,
+      lat: 18.02,
+      lng: -76.745,
+    };
+    setClosures((prev) => [...prev, newClosure]);
+
+    // Fire push notification to subscribers for this parish
+    await fetch("/api/notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: `Road Closure: ${newClosure.road}`,
+        body: `${newClosure.parish} — ${newClosure.reason}. Detour: ${newClosure.detour}`,
+        url: "/closures",
+        parish: newClosure.parish,
+      }),
+    }).catch(() => {/* non-blocking */});
+
     setCmsStep(6);
   }
 
