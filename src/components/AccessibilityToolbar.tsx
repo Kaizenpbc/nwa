@@ -207,9 +207,6 @@ export default function AccessibilityToolbar() {
           <circle cx="12" cy="3.5" r="2" />
           <path d="M17 7.5H7a1 1 0 000 2h3.5v2.3l-2.8 5.6a1 1 0 001.8.9L11.9 14h.2l2.4 4.3a1 1 0 001.8-.9l-2.8-5.6V9.5H17a1 1 0 000-2z" />
         </svg>
-        <span style={{ fontSize: "8px", fontWeight: 700, color: "#f4c430", letterSpacing: "0.05em", writingMode: "vertical-rl", textOrientation: "mixed" }}>
-          A11Y
-        </span>
         {activeCount > 0 && (
           <span
             style={{
