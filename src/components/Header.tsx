@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { FiMenu, FiX, FiSearch, FiPhone } from "react-icons/fi";
 
 const navItems = [
@@ -36,6 +36,7 @@ export default function Header() {
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   const results = query.trim().length > 0
     ? SEARCH_INDEX.filter((item) =>
@@ -106,6 +107,7 @@ export default function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  aria-current={pathname === item.href ? "page" : undefined}
                   className="px-3 py-2 text-sm font-medium rounded-md hover:bg-white/10 transition-colors"
                 >
                   {item.label}
@@ -146,7 +148,7 @@ export default function Header() {
                         className="flex-1 text-sm outline-none bg-transparent"
                       />
                       {query && (
-                        <button onClick={() => setQuery("")} className="text-gray-400 hover:text-gray-600">
+                        <button onClick={() => setQuery("")} aria-label="Clear search" className="text-gray-400 hover:text-gray-600">
                           <FiX className="w-4 h-4" />
                         </button>
                       )}
@@ -205,6 +207,7 @@ export default function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  aria-current={pathname === item.href ? "page" : undefined}
                   className="block px-3 py-2 text-sm font-medium rounded-md hover:bg-white/10 transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >

@@ -49,6 +49,21 @@ body {
   animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
+/* Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+  .progress-fill {
+    transition: none;
+  }
+}
+
 /* Line clamp for mobile cards */
 .line-clamp-2 {
   display: -webkit-box;
@@ -73,6 +88,13 @@ body {
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Visible focus rings for keyboard navigation */
+:focus-visible {
+  outline: 3px solid #f4c430;
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 /* Skip to content link for accessibility */

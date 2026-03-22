@@ -326,6 +326,7 @@ export default function ReportIssuePage() {
                     <select
                       id="category"
                       required
+                      aria-required="true"
                       value={form.category}
                       onChange={(e) => update("category", e.target.value)}
                       className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-nwa-blue focus:border-transparent"
@@ -350,6 +351,7 @@ export default function ReportIssuePage() {
                     <textarea
                       id="description"
                       required
+                      aria-required="true"
                       rows={4}
                       value={form.description}
                       onChange={(e) => update("description", e.target.value)}
@@ -391,6 +393,7 @@ export default function ReportIssuePage() {
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-nwa-blue transition-colors cursor-pointer">
                   {/* camera icon */}
                   <svg
+                    aria-hidden="true"
                     className="w-8 h-8 text-gray-400 mx-auto mb-2"
                     fill="none"
                     viewBox="0 0 24 24"

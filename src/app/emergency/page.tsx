@@ -160,7 +160,7 @@ export default function EmergencyPage() {
               className="bg-white rounded-xl p-4 shadow-sm"
               style={{ borderTop: `4px solid ${kpi.color}` }}
             >
-              <div className="text-2xl mb-1">{kpi.icon}</div>
+              <div className="text-2xl mb-1" aria-hidden="true">{kpi.icon}</div>
               <div className="text-2xl md:text-3xl font-bold text-gray-900">
                 {kpi.value}
               </div>

@@ -45,7 +45,7 @@ export default function MapView({
         className={`bg-gray-100 rounded-lg flex items-center justify-center ${className}`}
         style={{ height }}
       >
-        <p className="text-gray-500 text-sm">Loading map...</p>
+        <p role="status" className="text-gray-500 text-sm">Loading map...</p>
       </div>
     );
   }
@@ -92,7 +92,7 @@ function DynamicMap({ center, zoom, markers, height, className }: MapViewProps) 
         className={`bg-gray-100 rounded-lg flex items-center justify-center ${className}`}
         style={{ height }}
       >
-        <p className="text-gray-500 text-sm">Loading map...</p>
+        <p role="status" className="text-gray-500 text-sm">Loading map...</p>
       </div>
     );
   }
@@ -106,6 +106,7 @@ function DynamicMap({ center, zoom, markers, height, className }: MapViewProps) 
         zoom={zoom || 9}
         style={{ height: "100%", width: "100%" }}
         scrollWheelZoom={false}
+        aria-label="Interactive map of Jamaica"
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
