@@ -40,15 +40,27 @@ export default function PushNotificationBell() {
     setLoading(true);
     try {
       const permission = await Notification.requestPermission();
+      if (permission === "denied") {
+        alert("Notifications are blocked. Please enable them in your browser settings and try again.");
+        return;
+      }
       if (permission !== "granted") {
-        alert("Please allow notifications in your browser");
-        setLoading(false);
+        alert("Please allow notifications to receive road alerts.");
         return;
       }
 
-      const reg = await navigator.serviceWorker.ready;
-      const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!;
-      const sub = await reg.pushManager.subscribe({
+      // Wait for service worker with a timeout
+      const swReady = await Promise.race([
+        navigator.serviceWorker.ready,
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("Service worker timed out")), 8000)
+        ),
+      ]);
+
+      const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+      if (!publicKey) throw new Error("Push key not configured");
+
+      const sub = await (swReady as ServiceWorkerRegistration).pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicKey),
       });
@@ -62,6 +74,8 @@ export default function PushNotificationBell() {
       setSubscribed(true);
     } catch (err) {
       console.error("Push subscription failed:", err);
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      alert(`Could not set up alerts: ${msg}\n\nVisit the Road Closures page to see current alerts.`);
     } finally {
       setLoading(false);
     }
