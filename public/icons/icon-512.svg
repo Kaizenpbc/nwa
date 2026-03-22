@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Blue circle background -->
+  <circle cx="256" cy="256" r="256" fill="#003876"/>
+  <!-- Road perspective: two parallel lines converging to horizon -->
+  <!-- Left road edge -->
+  <polygon points="160,430 213,213 256,213 203,430" fill="white" opacity="0.95"/>
+  <!-- Right road edge -->
+  <polygon points="352,430 299,213 256,213 309,430" fill="white" opacity="0.95"/>
+  <!-- Road surface between -->
+  <polygon points="203,430 256,213 309,430" fill="white" opacity="0.3"/>
+  <!-- Horizon line -->
+  <line x1="192" y1="213" x2="320" y2="213" stroke="white" stroke-width="8" opacity="0.7"/>
+  <!-- Center dashed line -->
+  <line x1="256" y1="430" x2="256" y2="295" stroke="#f4c430" stroke-width="11" stroke-dasharray="32,21"/>
+  <!-- NWA text -->
+  <text x="256" y="476" text-anchor="middle" font-family="Arial, sans-serif" font-size="58" font-weight="bold" fill="#f4c430" letter-spacing="8">NWA</text>
+</svg>
