@@ -8,6 +8,7 @@ import {
   CASE_STATUS_LABELS,
 } from "@/data/mock";
 import type { Complaint } from "@/data/mock";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 /* ------------------------------------------------------------------ */
 /*  Status timeline steps (matches Report page)                        */
@@ -92,6 +93,7 @@ export default function TrackComplaintPage() {
           </p>
         </div>
       </div>
+      <Breadcrumbs crumbs={[{ label: "Report an Issue", href: "/complaints" }, { label: "Track Request" }]} />
 
       <div className="max-w-2xl mx-auto px-4 py-8">
         {/* Search form */}

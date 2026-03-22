@@ -3,6 +3,10 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AlertBanner from "@/components/AlertBanner";
+import AccessibilityToolbar from "@/components/AccessibilityToolbar";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import PushNotificationBell from "@/components/PushNotificationBell";
+import PwaInstall from "@/components/PwaInstall";
 
 export const metadata: Metadata = {
   title: "National Works Agency | Government of Jamaica",
@@ -21,17 +25,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="antialiased min-h-screen flex flex-col">
+    <html lang="en" suppressHydrationWarning>
+      <body className="antialiased min-h-screen flex flex-col" suppressHydrationWarning>
         <a href="#main-content" className="skip-to-content">
           Skip to main content
         </a>
+        <PwaInstall />
         <AlertBanner />
         <Header />
         <main id="main-content" className="flex-1">
           {children}
         </main>
         <Footer />
+        <AccessibilityToolbar />
+        <WhatsAppButton />
+        <PushNotificationBell />
       </body>
     </html>
   );

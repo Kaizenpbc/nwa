@@ -4,6 +4,13 @@
       "command": "npx",
       "args": ["tsx", "mcp-server.ts"],
       "cwd": "/home/user/nwa"
+    },
+    "nwa-dashboard-http": {
+      "type": "http",
+      "url": "https://nwa.gov.jm/api/mcp",
+      "headers": {
+        "Authorization": "Bearer ${NWA_STAFF_TOKEN}"
+      }
     }
   }
 }

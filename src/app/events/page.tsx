@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -158,6 +159,7 @@ export default function EventsPage() {
           </p>
         </div>
       </div>
+      <Breadcrumbs crumbs={[{ label: "Live Events" }]} />
 
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-4">
         {/* ── KPI Strip ── */}

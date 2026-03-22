@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import {
   COMPLAINTS_INIT,
   CLOSURES,
@@ -94,7 +95,7 @@ function KpiCard({
       className="bg-white rounded-xl p-5 shadow-sm flex flex-col items-center text-center hover:shadow-md transition-shadow"
       style={{ borderTop: `4px solid ${borderColor}` }}
     >
-      <span className="text-2xl mb-1">{icon}</span>
+      <span className="text-2xl mb-1" aria-hidden="true">{icon}</span>
       <span className="text-3xl font-bold text-gray-900">
         <AnimatedCounter value={value} />
       </span>
@@ -234,6 +235,17 @@ function SlaBadge({ complaint }: { complaint: Complaint }) {
 export default function PortalPage() {
   /* ── Top-level state ── */
   const [activeTab, setActiveTab] = useState<Tab>("dashboard");
+
+  /* ── Staff auth ── */
+  const [staffToken, setStaffToken] = useState("");
+  const [tokenInput, setTokenInput] = useState("");
+  const [showTokenInput, setShowTokenInput] = useState(false);
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem("nwa_staff_token") ?? "";
+    setStaffToken(saved);
+    setTokenInput(saved);
+  }, []);
 
   /* ── Dashboard state ── */
   const [complaints, setComplaints] = useState<Complaint[]>([...COMPLAINTS_INIT]);
@@ -529,25 +541,35 @@ export default function PortalPage() {
     }
   }
 
-  function handlePublishAndPush() {
+  async function handlePublishAndPush() {
     setCmsPushToHomepage(true);
-    // Add a new closure to local state
-    setClosures((prev) => [
-      ...prev,
-      {
-        id: prev.length + 1,
-        road: "Old Hope Road (near Papine)",
-        parish: "St. Andrew",
-        start: "2026-03-05",
-        end: "2026-03-12",
-        reason: "Emergency sinkhole repair",
-        detour: "Use Gordon Town Road as alternate route",
-        severity: "critical",
-        push: true,
-        lat: 18.02,
-        lng: -76.745,
-      },
-    ]);
+    const newClosure = {
+      id: closures.length + 1,
+      road: "Old Hope Road (near Papine)",
+      parish: "St. Andrew",
+      start: "2026-03-05",
+      end: "2026-03-12",
+      reason: "Emergency sinkhole repair",
+      detour: "Use Gordon Town Road as alternate route",
+      severity: "critical",
+      push: true,
+      lat: 18.02,
+      lng: -76.745,
+    };
+    setClosures((prev) => [...prev, newClosure]);
+
+    // Fire push notification to subscribers for this parish
+    await fetch("/api/notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: `Road Closure: ${newClosure.road}`,
+        body: `${newClosure.parish} — ${newClosure.reason}. Detour: ${newClosure.detour}`,
+        url: "/closures",
+        parish: newClosure.parish,
+      }),
+    }).catch(() => {/* non-blocking */});
+
     setCmsStep(6);
   }
 
@@ -564,19 +586,88 @@ export default function PortalPage() {
             <span className="text-2xl">{"\uD83D\uDD10"}</span> Staff Portal
           </h1>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-blue-200">Logged in as staff</span>
-            <div className="w-8 h-8 bg-nwa-yellow rounded-full flex items-center justify-center">
-              <span className="text-nwa-blue font-bold text-xs">ST</span>
-            </div>
+            {staffToken ? (
+              <>
+                <Link
+                  href="/voice"
+                  className="text-sm px-3 py-1.5 rounded-full bg-nwa-yellow text-nwa-blue font-semibold hover:brightness-105 transition flex items-center gap-1.5"
+                >
+                  🎤 Voice Assistant
+                </Link>
+                <button
+                  onClick={() => setShowTokenInput((v) => !v)}
+                  className="flex items-center gap-2 text-sm text-blue-200 hover:text-white transition"
+                >
+                  <div className="w-8 h-8 bg-nwa-yellow rounded-full flex items-center justify-center">
+                    <span className="text-nwa-blue font-bold text-xs">ST</span>
+                  </div>
+                  <span className="hidden sm:inline">Staff</span>
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => setShowTokenInput((v) => !v)}
+                className="text-sm px-3 py-1.5 rounded-full border border-white/30 hover:bg-white/10 transition"
+              >
+                🔑 Staff login
+              </button>
+            )}
           </div>
         </div>
       </div>
 
+      {/* ── Staff token input panel ── */}
+      {showTokenInput && (
+        <div className="bg-nwa-dark text-white px-6 py-4">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+            <span className="text-sm text-blue-200 shrink-0">Staff token:</span>
+            <input
+              type="password"
+              value={tokenInput}
+              onChange={(e) => setTokenInput(e.target.value)}
+              placeholder="Enter staff token"
+              className="flex-1 text-sm rounded-lg px-3 py-2 text-gray-900 bg-white border border-white/20 outline-none focus:ring-2 focus:ring-nwa-yellow"
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  const t = tokenInput.trim();
+                  sessionStorage.setItem("nwa_staff_token", t);
+                  setStaffToken(t);
+                  setShowTokenInput(false);
+                }}
+                className="text-sm px-4 py-2 rounded-lg bg-nwa-yellow text-nwa-blue font-semibold hover:brightness-105 transition"
+              >
+                Save
+              </button>
+              {staffToken && (
+                <button
+                  onClick={() => {
+                    sessionStorage.removeItem("nwa_staff_token");
+                    setStaffToken("");
+                    setTokenInput("");
+                    setShowTokenInput(false);
+                  }}
+                  className="text-sm px-3 py-2 rounded-lg border border-white/30 hover:bg-white/10 transition"
+                >
+                  Sign out
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <Breadcrumbs crumbs={[{ label: "Staff Portal" }]} />
+
       {/* ── Tab Bar ── */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex gap-1">
+          <div className="flex gap-1" role="tablist" aria-label="Portal sections">
             <button
+              role="tab"
+              aria-selected={activeTab === "dashboard"}
+              aria-controls="tab-panel-dashboard"
               onClick={() => setActiveTab("dashboard")}
               className={`px-5 py-3 text-sm font-semibold border-b-2 transition-colors ${
                 activeTab === "dashboard"
@@ -584,9 +675,12 @@ export default function PortalPage() {
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
               }`}
             >
-              {"\uD83D\uDCCA"} Dashboard
+              <span aria-hidden="true">{"\uD83D\uDCCA"}</span> Dashboard
             </button>
             <button
+              role="tab"
+              aria-selected={activeTab === "cms"}
+              aria-controls="tab-panel-cms"
               onClick={() => setActiveTab("cms")}
               className={`px-5 py-3 text-sm font-semibold border-b-2 transition-colors ${
                 activeTab === "cms"
@@ -594,7 +688,7 @@ export default function PortalPage() {
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
               }`}
             >
-              {"\uD83D\uDCDD"} CMS
+              <span aria-hidden="true">{"\uD83D\uDCDD"}</span> CMS
             </button>
           </div>
         </div>
@@ -604,7 +698,7 @@ export default function PortalPage() {
       {/*  DASHBOARD TAB                                                    */}
       {/* ================================================================ */}
       {activeTab === "dashboard" && (
-        <div className="max-w-7xl mx-auto px-4 py-8">
+        <div id="tab-panel-dashboard" role="tabpanel" className="max-w-7xl mx-auto px-4 py-8">
           {/* Title */}
           <div className="mb-6">
             <div className="flex items-center gap-3 flex-wrap">
@@ -739,45 +833,51 @@ export default function PortalPage() {
                     <thead>
                       <tr className="bg-gray-50 border-b border-gray-200">
                         <th
+                          scope="col"
                           className="px-4 py-3 text-left font-semibold text-gray-600 cursor-pointer hover:text-gray-900 select-none"
                           onClick={() => handleSort("id")}
                         >
                           ID{sortIcon("id")}
                         </th>
                         <th
+                          scope="col"
                           className="px-4 py-3 text-left font-semibold text-gray-600 cursor-pointer hover:text-gray-900 select-none"
                           onClick={() => handleSort("date")}
                         >
                           Date{sortIcon("date")}
                         </th>
                         <th
+                          scope="col"
                           className="px-4 py-3 text-left font-semibold text-gray-600 cursor-pointer hover:text-gray-900 select-none"
                           onClick={() => handleSort("category")}
                         >
                           Category{sortIcon("category")}
                         </th>
                         <th
+                          scope="col"
                           className="px-4 py-3 text-left font-semibold text-gray-600 cursor-pointer hover:text-gray-900 select-none"
                           onClick={() => handleSort("parish")}
                         >
                           Parish{sortIcon("parish")}
                         </th>
                         <th
+                          scope="col"
                           className="px-4 py-3 text-left font-semibold text-gray-600 cursor-pointer hover:text-gray-900 select-none"
                           onClick={() => handleSort("priority")}
                         >
                           Priority{sortIcon("priority")}
                         </th>
                         <th
+                          scope="col"
                           className="px-4 py-3 text-left font-semibold text-gray-600 cursor-pointer hover:text-gray-900 select-none"
                           onClick={() => handleSort("status")}
                         >
                           Status{sortIcon("status")}
                         </th>
-                        <th className="px-4 py-3 text-left font-semibold text-gray-600">
+                        <th scope="col" className="px-4 py-3 text-left font-semibold text-gray-600">
                           SLA
                         </th>
-                        <th className="px-4 py-3 text-left font-semibold text-gray-600">
+                        <th scope="col" className="px-4 py-3 text-left font-semibold text-gray-600">
                           Actions
                         </th>
                       </tr>
@@ -854,8 +954,12 @@ export default function PortalPage() {
                 {filteredComplaints.map((c) => (
                   <div
                     key={c.id}
+                    role="button"
+                    tabIndex={0}
                     className="bg-white rounded-xl p-4 shadow-sm active:bg-blue-50 transition-colors cursor-pointer"
                     onClick={() => openDetailModal(c)}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDetailModal(c); } }}
+                    aria-label={`View complaint ${c.id.slice(-8)}: ${c.category} in ${c.parish}`}
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-mono text-xs font-semibold text-nwa-blue">
@@ -970,7 +1074,7 @@ export default function PortalPage() {
       {/*  CMS TAB                                                         */}
       {/* ================================================================ */}
       {activeTab === "cms" && (
-        <div className="max-w-4xl mx-auto px-4 py-8">
+        <div id="tab-panel-cms" role="tabpanel" className="max-w-4xl mx-auto px-4 py-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             CMS Content Workflow Demo
           </h2>
@@ -1121,7 +1225,7 @@ export default function PortalPage() {
                     </span>
                   </div>
                   <div className="mt-3 text-xs text-gray-500">
-                    Submitted by: editor@nwa.gov.jm | {new Date().toLocaleDateString("en-JM")}
+                    Submitted by: editor@nwa.gov.jm | <span suppressHydrationWarning>{new Date().toLocaleDateString("en-JM")}</span>
                   </div>
                 </div>
               </div>
@@ -1185,7 +1289,7 @@ export default function PortalPage() {
                   </div>
                   <div className="mt-3 text-xs text-gray-500">
                     Approved by: approver@nwa.gov.jm |{" "}
-                    {new Date().toLocaleDateString("en-JM")}
+                    <span suppressHydrationWarning>{new Date().toLocaleDateString("en-JM")}</span>
                   </div>
                 </div>
               </div>
@@ -1356,6 +1460,9 @@ export default function PortalPage() {
 
           {/* Modal content */}
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="detail-modal-title"
             className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
@@ -1373,7 +1480,7 @@ export default function PortalPage() {
                   <p className="text-xs text-blue-200 font-mono mb-1">
                     {selectedComplaint.id}
                   </p>
-                  <h3 className="text-lg font-bold">
+                  <h3 id="detail-modal-title" className="text-lg font-bold">
                     {selectedComplaint.category} Report
                   </h3>
                 </div>
@@ -1575,7 +1682,7 @@ export default function PortalPage() {
                         <div className="flex items-center gap-2 text-xs text-yellow-700 mb-1">
                           <span className="font-semibold">Staff</span>
                           <span>{"\u2022"}</span>
-                          <span>{new Date().toLocaleDateString("en-JM")}</span>
+                          <span suppressHydrationWarning>{new Date().toLocaleDateString("en-JM")}</span>
                         </div>
                         {note}
                       </div>
@@ -1679,11 +1786,14 @@ export default function PortalPage() {
         >
           <div className="fixed inset-0 bg-black/50" />
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="assign-modal-title"
             className="relative bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-6 py-4 bg-nwa-blue text-white flex items-center justify-between">
-              <h3 className="font-bold">Assign Case</h3>
+              <h3 id="assign-modal-title" className="font-bold">Assign Case</h3>
               <button
                 onClick={() => {
                   setShowAssignModal(false);
@@ -1736,12 +1846,15 @@ export default function PortalPage() {
         >
           <div className="fixed inset-0 bg-black/50" />
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="closeout-modal-title"
             className="relative bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-6 py-4 bg-gradient-to-r from-nwa-blue to-nwa-green text-white flex items-center justify-between">
-              <h3 className="font-bold flex items-center gap-2">
-                {"\uD83D\uDC65"} 2-Person Closeout
+              <h3 id="closeout-modal-title" className="font-bold flex items-center gap-2">
+                <span aria-hidden="true">{"\uD83D\uDC65"}</span> 2-Person Closeout
               </h3>
               <button
                 onClick={() => {
